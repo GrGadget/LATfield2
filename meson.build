@@ -24,7 +24,6 @@ latfield_headers = files(
     'LATfield2_IO_server.hpp',
     'LATfield2_Lattice.hpp',
     'LATfield2_parallel2d.hpp',
-    'LATfield2_PlanFFT_decl.hpp',
     'LATfield2_PlanFFT.hpp',
     'LATfield2_save_hdf5.hpp',
     'LATfield2_save_hdf5_pixie.h',

@@ -3,6 +3,7 @@ sources = files(
     'LATfield2_Field.cpp',
     'LATfield2_Lattice.cpp',
     'LATfield2_Site.cpp',
+    'LATfield2_PlanFFT.cpp',
     'LATfield2_SettingsFile.cpp',
     'LATfield2_particle_simple.cpp',
     'LATfield2_particlesIO.cpp',
