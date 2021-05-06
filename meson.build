@@ -20,11 +20,9 @@ latfield_headers = files(
     'Imag.hpp',
     'int2string.hpp',
     'LATfield2_Catalyst.hpp',
-    'LATfield2_Field_decl.hpp',
     'LATfield2_Field.hpp',
     'LATfield2.hpp',
     'LATfield2_IO_server.hpp',
-    'LATfield2_Lattice_decl.hpp',
     'LATfield2_Lattice.hpp',
     'LATfield2_parallel2d.hpp',
     'LATfield2_PlanFFT_decl.hpp',
@@ -32,12 +30,16 @@ latfield_headers = files(
     'LATfield2_save_hdf5.h',
     'LATfield2_save_hdf5_pixie.h',
     'LATfield2_SettingsFile.hpp',
-    'LATfield2_Site_decl.hpp',
     'LATfield2_Site.hpp',
     'looping_macro.hpp',
     'timer.hpp')
 
-sources = files('LATfield2_parallel2d.cpp','LATfield2.cpp')
+sources = files(
+    'LATfield2_parallel2d.cpp',
+    'LATfield2_Field.cpp',
+    'LATfield2_Lattice.cpp',
+    'LATfield2_Site.cpp',
+    'LATfield2.cpp')
 subdir('particles')
 
 

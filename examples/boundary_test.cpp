@@ -4,11 +4,11 @@
     A simple example of LATfield2 usage.
  */
 
-
+#include <iostream>
 #include "LATfield2.hpp"
 #include <mpi.h>
 using namespace LATfield2;
-
+using namespace std;
 
 int main(int argc, char **argv)
 {

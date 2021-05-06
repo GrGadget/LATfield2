@@ -63,7 +63,7 @@
 #endif
 
 
-#include "LATfield2_Lattice_decl.hpp"
+#include "LATfield2_Lattice.hpp"
 
 #ifdef EXTERNAL_IO
 #include "LATfield2_IO_server.hpp"
