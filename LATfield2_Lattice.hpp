@@ -67,7 +67,6 @@ public:
      */
     void initialize(int dim, const int size, int halo);
     
-//#ifdef FFT3D
     
     
     /*!

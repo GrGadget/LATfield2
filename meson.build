@@ -40,7 +40,7 @@ subdir('src')
 liblatfield = library('latfield',latfield_headers,part_headers,sources,
     include_directories: include,
     install: true,
-    dependencies: [mpi,hdf5])
+    dependencies: [mpi,hdf5,fftw3])
 install_headers(latfield_headers)
 pkg.generate(liblatfield,
     description: 'LATfield2')

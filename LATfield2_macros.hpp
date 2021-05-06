@@ -18,7 +18,7 @@
 #endif
 #endif
 
-
+#define FFT3D
 
 
 #endif

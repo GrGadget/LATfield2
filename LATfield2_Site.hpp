@@ -202,7 +202,6 @@ protected:
 
 
 
-//#ifdef FFT3D
 
 /*! \class cKSite
  \brief A child of Site, built to work with the Fourier space Lattice for complex to complex transforms.

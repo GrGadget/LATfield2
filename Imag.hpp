@@ -9,6 +9,7 @@
 #include "LATfield2_macros.hpp"
 #include <cmath>
 #include <iostream>
+#include <fftw3.h>
 
 namespace LATfield2
 {

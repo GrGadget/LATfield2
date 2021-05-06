@@ -213,7 +213,6 @@ std::ostream& operator<<(std::ostream& os,  Site& x)
 
 
 
-//#ifdef FFT3D
 
 /* ckSite implmentation */
 
