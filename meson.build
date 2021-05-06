@@ -18,6 +18,7 @@ latfield_headers = files(
     'Imag.hpp',
     'int2string.hpp',
     'LATfield2_Catalyst.hpp',
+    'LATfield2_macros.hpp',
     'LATfield2_Field.hpp',
     'LATfield2.hpp',
     'LATfield2_IO_server.hpp',
@@ -25,7 +26,7 @@ latfield_headers = files(
     'LATfield2_parallel2d.hpp',
     'LATfield2_PlanFFT_decl.hpp',
     'LATfield2_PlanFFT.hpp',
-    'LATfield2_save_hdf5.h',
+    'LATfield2_save_hdf5.hpp',
     'LATfield2_save_hdf5_pixie.h',
     'LATfield2_SettingsFile.hpp',
     'LATfield2_Site.hpp',
@@ -39,7 +40,7 @@ subdir('src')
 liblatfield = library('latfield',latfield_headers,part_headers,sources,
     include_directories: include,
     install: true,
-    dependencies: mpi)
+    dependencies: [mpi,hdf5])
 install_headers(latfield_headers)
 pkg.generate(liblatfield,
     description: 'LATfield2')

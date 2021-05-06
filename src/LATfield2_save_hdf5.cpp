@@ -1,20 +1,11 @@
-#pragma once
-/*! \file LATfield2_save_hdf5.h
- \brief LATfield2_save_hdf5.h contains the definition of the function used for hdf5 i/o.
- \author David Daverio
- */
-
-#include <math.h>
-#include <hdf5.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include "LATfield2_save_hdf5.hpp"
+#include "LATfield2_parallel2d.hpp"
 
 namespace LATfield2
 {
-
-extern "C"{
-   int save_hdf5_externC(char *data,long file_offset[2],int *size,int * sizeLocal,int halo, int lat_dim,int comp,hid_t array_type,int array_size,string  filename_str, string dataset_name_str)
+   int save_hdf5_externC(char *data,long file_offset[2],int *size,int *
+   sizeLocal,int halo, int lat_dim,int comp,hid_t array_type,int
+   array_size,std::string  filename_str, std::string dataset_name_str)
    {
 
 	   hid_t file_id, plist_id,filespace,memspace,dset_id,dtype_id{},dtbase_id,root_id;
@@ -231,9 +222,8 @@ extern "C"{
 
 
  }
-
-
-	int load_hdf5_externC(char *data,long file_offset[2],int *size,int * sizeLocal,int halo, int lat_dim,string  filename_str, string dataset_name_str)
+	int load_hdf5_externC(char *data,long file_offset[2],int *size,int *
+    sizeLocal,int halo, int lat_dim,std::string  filename_str, std::string dataset_name_str)
 	{
 
 
@@ -376,19 +366,4 @@ extern "C"{
 #endif
         return -1;
 	}
-
-}
-
-template<class fieldType>
-int save_hdf5(fieldType *data,hid_t type_id,int array_size,long file_offset[2],int *size,int * sizeLocal,int halo, int lat_dim,int comp,string  filename_str, string dataset_name_str)
-{
-
-	return save_hdf5_externC((char*)data, file_offset, size, sizeLocal, halo, lat_dim, comp, type_id, array_size, filename_str, dataset_name_str);
-}
-template<class fieldType>
-int load_hdf5(fieldType *data,long file_offset[2],int *size,int * sizeLocal,int halo, int lat_dim,int comp,string  filename_str, string dataset_name_str)
-{
-    return load_hdf5_externC( (char*) data, file_offset, size, sizeLocal, halo, lat_dim,  filename_str, dataset_name_str);
-}
-
 }

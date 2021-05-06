@@ -6,6 +6,7 @@
 
  */
 
+#include "LATfield2_macros.hpp"
 #include <cmath>
 #include <iostream>
 

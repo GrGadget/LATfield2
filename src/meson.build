@@ -5,10 +5,12 @@ sources = files(
     'LATfield2_Site.cpp',
     'LATfield2_SettingsFile.cpp',
     'LATfield2_particle_simple.cpp',
+    'LATfield2_particlesIO.cpp',
     'int2string.cpp',
     'projections.cpp',
     'move_function.cpp',
     'updateVel_function.cpp',
     'particles_tools.cpp',
     'LATfield2_particle_rk4.cpp',
+    'LATfield2_save_hdf5.cpp',
     'LATfield2.cpp')

@@ -64,7 +64,7 @@
 #include "updateVel_function.hpp"
 
 #ifdef HDF5
-#include "LATfield2_particlesIO.h"
+#include "LATfield2_particlesIO.hpp"
 #endif
 
 #define GLOBAL_MASS     0
