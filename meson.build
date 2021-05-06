@@ -34,13 +34,8 @@ latfield_headers = files(
     'looping_macro.hpp',
     'timer.hpp')
 
-sources = files(
-    'LATfield2_parallel2d.cpp',
-    'LATfield2_Field.cpp',
-    'LATfield2_Lattice.cpp',
-    'LATfield2_Site.cpp',
-    'LATfield2.cpp')
 subdir('particles')
+subdir('src')
 
 
 liblatfield = library('latfield',latfield_headers,part_headers,sources,
