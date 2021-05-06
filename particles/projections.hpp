@@ -35,12 +35,6 @@ inline long setIndex(long * size, long i, long j,long k)
 {
     return i + size[0] *( j+size[1]*k) ;
 }
-template<size_t S>
-long setIndex(const std::array<long,S>& size, long i, long j,long k)
-{
-    static_assert(S>1);
-    return i + size[0] *( j+size[1]*k) ;
-}
 
 /*! \fn void projection_init(Field<Real> * f)
  Set to zero all components of the field f on the entire lattice (including the halo).
