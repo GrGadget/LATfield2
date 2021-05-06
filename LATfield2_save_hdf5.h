@@ -17,7 +17,7 @@ extern "C"{
    int save_hdf5_externC(char *data,long file_offset[2],int *size,int * sizeLocal,int halo, int lat_dim,int comp,hid_t array_type,int array_size,string  filename_str, string dataset_name_str)
    {
 
-	   hid_t file_id, plist_id,filespace,memspace,dset_id,dtype_id{},dtbase_id;//root_id;
+	   hid_t file_id, plist_id,filespace,memspace,dset_id,dtype_id{},dtbase_id,root_id;
 	   hsize_t * components;
 
 	   char * filename;

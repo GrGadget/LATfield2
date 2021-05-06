@@ -72,6 +72,9 @@
 namespace LATfield2 
 {
 
+using std::endl;
+using std::cout;
+
 CREATE_MEMBER_DETECTOR(mass)
 CREATE_MEMBER_DETECTOR(ID)
 CREATE_MEMBER_DETECTOR(vel)

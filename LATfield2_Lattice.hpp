@@ -11,6 +11,9 @@
 
 namespace LATfield2
 {
+using std::endl;
+using std::cerr;
+using std::cout;
 
     using std::fstream;
 

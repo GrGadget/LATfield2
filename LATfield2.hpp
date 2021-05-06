@@ -76,7 +76,7 @@ namespace LATfield2
 #include "LATfield2_parallel2d.hpp"
 namespace LATfield2
 {
-    Parallel2d parallel;
+    extern Parallel2d parallel;
 }
 
 #include "LATfield2_SettingsFile.hpp"

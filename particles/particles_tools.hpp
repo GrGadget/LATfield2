@@ -1,8 +1,11 @@
 #ifndef PARTICLES_TOOLS_HPP
 #define PARTICLES_TOOLS_HPP
 
+#include <iostream>
 namespace LATfield2
 {
+using std::endl;
+using std::cout;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 LATfield2::Real get_lattice_resolution(int npts[3],LATfield2::Real boxSize[3])

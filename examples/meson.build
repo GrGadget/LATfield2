@@ -12,7 +12,8 @@ foreach f : examples_files
         f.split('.')[0]+'.exe',
         f,
         include_directories: [include],
-        dependencies: [mpi,hdf5,fftw3])
+        dependencies: [mpi,hdf5,fftw3],
+        link_with: liblatfield)
 endforeach
 
 

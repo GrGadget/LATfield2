@@ -1,8 +1,12 @@
 #ifndef LATFIELD2_PROJECTIONS_HPP
 #define LATFIELD2_PROJECTIONS_HPP
 
+#include <iostream>
+
 namespace LATfield2
 {
+using std::endl;
+using std::cout;
 
 template <typename part, typename part_info, typename part_dataType>
 class Particles;

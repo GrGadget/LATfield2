@@ -25,6 +25,9 @@
 namespace LATfield2
 {
 
+using std::endl;
+using std::cerr;
+
 extern  const int FFT_FORWARD;
 extern  const int FFT_BACKWARD;
 extern  const int FFT_IN_PLACE;

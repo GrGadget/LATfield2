@@ -12,10 +12,11 @@ boost_ut = dependency('boost',modules: ['unit_test_framework'])
 mpirun = find_program('mpirun')
 fftw3 = dependency('fftw3')
 hdf5 = dependency('hdf5')
+pkg=import('pkgconfig')
 
 include=include_directories('.')
 
-headers = files(
+latfield_headers = files(
     'Imag.hpp',
     'int2string.hpp',
     'LATfield2_Catalyst.hpp',
@@ -25,7 +26,6 @@ headers = files(
     'LATfield2_IO_server.hpp',
     'LATfield2_Lattice_decl.hpp',
     'LATfield2_Lattice.hpp',
-    'LATfield2_parallel2d_decl.hpp',
     'LATfield2_parallel2d.hpp',
     'LATfield2_PlanFFT_decl.hpp',
     'LATfield2_PlanFFT.hpp',
@@ -37,7 +37,18 @@ headers = files(
     'looping_macro.hpp',
     'timer.hpp')
 
+sources = files('LATfield2_parallel2d.cpp','LATfield2.cpp')
 subdir('particles')
+
+
+liblatfield = library('latfield',latfield_headers,part_headers,sources,
+    include_directories: include,
+    install: true,
+    dependencies: mpi)
+install_headers(latfield_headers)
+pkg.generate(liblatfield,
+    description: 'LATfield2')
+
 subdir('benchmarks_tests')
 subdir('examples')
 

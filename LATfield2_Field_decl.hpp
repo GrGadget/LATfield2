@@ -7,9 +7,13 @@
  */
 
 #include <fstream>
+#include <iostream>
 
 namespace LATfield2
 {
+using std::endl;
+using std::cerr;
+using std::cout;
 
     using std::fstream;
 //Matrix-style component symmetry

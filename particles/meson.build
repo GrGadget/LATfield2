@@ -1,4 +1,4 @@
-headers += files(
+part_headers = files(
     'LATfield2_particle_description_template.hpp',
     'LATfield2_particle_rk4.hpp',
     'LATfield2_Particles.hpp',
@@ -8,3 +8,4 @@ headers += files(
     'particles_tools.hpp',
     'projections.hpp',
     'updateVel_function.hpp' )
+install_headers(part_headers,subdir: 'particles')
