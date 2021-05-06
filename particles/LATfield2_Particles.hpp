@@ -1,7 +1,11 @@
 #ifndef LATFIELD2_PARTICLES_HPP
 #define LATFIELD2_PARTICLES_HPP
 
+#include "LATfield2_macros.hpp"
+#include "int2string.hpp"
+#include <hdf5.h>
 #include <list>
+#include <vector>
 #include <iomanip>
 
 /**

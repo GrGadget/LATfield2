@@ -5,6 +5,7 @@
 #include "LATfield2_Field.hpp"
 #include "particles/LATfield2_Particles.hpp"
 #include <iostream>
+#include <array>
 
 namespace LATfield2
 {
@@ -32,6 +33,12 @@ class Particles;
  */
 inline long setIndex(long * size, long i, long j,long k)
 {
+    return i + size[0] *( j+size[1]*k) ;
+}
+template<size_t S>
+long setIndex(const std::array<long,S>& size, long i, long j,long k)
+{
+    static_assert(S>1);
     return i + size[0] *( j+size[1]*k) ;
 }
 

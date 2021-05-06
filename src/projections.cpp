@@ -738,6 +738,9 @@ void scalarProjectionCIC_comm(Field<Real> * rho)
     {
         for(int j=distHaloOne;j<sizeLocalOne[1]+distHaloOne;j++)
         {
+            //auto ind1 = setIndex(sizeLocalGross,halo,j,k);
+            //auto ind2 = setIndex(sizeLocalGross,iref,j,k);
+            //std::cerr << "Ind1,2 = " << ind1 << " " << ind2 << '\n';
             (*rho)(setIndex(sizeLocalGross,halo,j,k)) += (*rho)(setIndex(sizeLocalGross,iref,j,k));
         }
     }

@@ -1,6 +1,7 @@
 #ifndef LATFIELD2_PARTICLE_DEF_HPP
 #define LATFIELD2_PARTICLE_DEF_HPP
 
+#include "LATfield2_macros.hpp"
 namespace LATfield2
 {
 /*! \file LATfield2_particle_description_template.hpp

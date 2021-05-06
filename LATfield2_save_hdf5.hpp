@@ -4,37 +4,13 @@
  \author David Daverio
  */
 
+#include "LATfield2_macros.hpp"
 #include <cmath>
 #include <hdf5.h>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 
-#ifdef BIG_ENDIAN_ORDER
-  #define DATA_ORDER H5T_ORDER_BE
-  #define LONG_TYPE_FILE H5T_STD_I64BE
-  #define INT_TYPE_FILE H5T_STD_I32BE
-  #define FLOAT_TYPE_FILE H5T_IEEE_F32BE
-  #define DOUBLE_TYPE_FILE H5T_IEEE_F64BE
-  #define BOOL_TYPE_FILE H5T_STD_I8BE
-  #ifdef SINGLE
-    #define REAL_TYPE_FILE H5T_IEEE_F32BE
-  #else
-    #define REAL_TYPE_FILE H5T_IEEE_F64BE
-  #endif
-#else
-  #define  DATA_ORDER H5T_ORDER_LE
-  #define LONG_TYPE_FILE H5T_STD_I64LE
-  #define INT_TYPE_FILE H5T_STD_I32LE
-  #define FLOAT_TYPE_FILE H5T_IEEE_F32LE
-  #define DOUBLE_TYPE_FILE H5T_IEEE_F64LE
-  #define BOOL_TYPE_FILE H5T_STD_I8LE
-  #ifdef SINGLE
-    #define REAL_TYPE_FILE H5T_IEEE_F32LE
-  #else
-    #define REAL_TYPE_FILE H5T_IEEE_F64LE
-  #endif
-#endif
 
 
 namespace LATfield2

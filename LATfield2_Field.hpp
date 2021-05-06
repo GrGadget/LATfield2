@@ -9,9 +9,13 @@
 #include <fstream>
 #include <iostream>
 
+#include "LATfield2_macros.hpp"
 #include "LATfield2_Lattice.hpp"
 #include "LATfield2_Site.hpp"
 #include "LATfield2_parallel2d.hpp"
+#include "Imag.hpp"
+
+#include <hdf5.h>
 
 
 namespace LATfield2

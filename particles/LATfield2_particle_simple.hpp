@@ -3,6 +3,7 @@
 
 #include "LATfield2_macros.hpp"
 #include "Imag.hpp"
+#include <hdf5.h>
 #include <iostream>
 
 namespace LATfield2
