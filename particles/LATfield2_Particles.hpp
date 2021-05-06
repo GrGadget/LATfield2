@@ -1,6 +1,9 @@
 #ifndef LATFIELD2_PARTICLES_HPP
 #define LATFIELD2_PARTICLES_HPP
 
+#include <list>
+#include <iomanip>
+
 /**
  * \defgroup partModule Particles Module
  * @{

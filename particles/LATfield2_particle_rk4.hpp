@@ -1,6 +1,9 @@
 #ifndef LATFIELD2_PARTICLE_RK4_DEF_HPP
 #define LATFIELD2_PARTICLE_RK4_DEF_HPP
 
+#include "Imag.hpp"
+#include <iostream>
+
 namespace LATfield2
 {
 /*! \file LATfield2_particle_simple.hpp
@@ -41,23 +44,19 @@ struct part_rk4{
 
   long ID;
   Real mass;
-  LATfield2::Real pos[3];
-  LATfield2::Real vel[3];
-  LATfield2::Real pos_out[3];
-  LATfield2::Real vel_out[3];
-  LATfield2::Real pos_in[3];
-  LATfield2::Real vel_in[3];
+  Real pos[3];
+  Real vel[3];
+  Real pos_out[3];
+  Real vel_out[3];
+  Real pos_in[3];
+  Real vel_in[3];
   // interesting one need in fact only 3 fields, the point is that here we cannot save computation by using an 4th field, pos_dot and vel_dot.
 };
 /*!
  \brief overloading of the << operator for individual property strucutre.
  \return ostream containing the ID, position and velocity of the particle.
  */
-std::ostream& operator<<(std::ostream& os, const part_rk4& p)
-{
-    os << "ID: "<<p.ID<<", mass: "<< p.mass<<" , Pos: ("<< p.pos[0]<<","<< p.pos[1]<<","<< p.pos[2]<<") , Vel: (" << p.vel[0]<<","<< p.vel[1]<<","<< p.vel[2]<<")";
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const part_rk4& p);
 
 /*! \struct part_simple_info
  \brief individual properties of the particle type "part_simple".

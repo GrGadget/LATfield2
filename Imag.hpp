@@ -6,6 +6,9 @@
 
  */
 
+#include <cmath>
+#include <iostream>
+
 namespace LATfield2
 {
 
