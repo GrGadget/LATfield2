@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_PARALLEL2D_DECL_HPP
 #define LATFIELD2_PARALLEL2D_DECL_HPP
+#include "config.h"
 
 /*! \file LATfield2_parallel2d_decl.hpp
  \brief LATfield2_parallel2d_decl.hpp contains the class Parallel2d declaration.

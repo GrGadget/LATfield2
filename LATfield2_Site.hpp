@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_SITE_DECL_HPP
 #define LATFIELD2_SITE_DECL_HPP
+#include "config.h"
 
 #include "LATfield2_macros.hpp"
 #include "LATfield2_Lattice.hpp"

@@ -1,5 +1,6 @@
 #ifndef INT2STRING_HPP
 #define INT2STRING_HPP
+#include "config.h"
 
 /*! \file int2string.hpp
    \brief int2string a small function to convert integer to string

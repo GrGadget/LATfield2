@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_UPDATEVEL_FUNCTION_HPP
 #define LATFIELD2_UPDATEVEL_FUNCTION_HPP
+#include "config.h"
 
 
 #include "LATfield2_macros.hpp"

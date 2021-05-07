@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_LATTICE_DECL_HPP
 #define LATFIELD2_LATTICE_DECL_HPP
+#include "config.h"
 
 /*! \class Lattice
  

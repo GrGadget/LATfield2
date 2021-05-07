@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_PLANFFT_DECL_HPP
 #define LATFIELD2_PLANFFT_DECL_HPP
+#include "config.h"
 #ifdef FFT3D
 
 #include "LATfield2_macros.hpp"

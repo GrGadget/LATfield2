@@ -1,5 +1,6 @@
 #ifndef IMAG_HPP
 #define IMAG_HPP
+#include "config.h"
 /*! \file Imag.hpp
     \brief Imag.hpp Contains the Imag class definition
     \author Neil Bevis

@@ -1,5 +1,6 @@
 #ifndef CATALYST_HPP
 #define CATALYST_HPP
+#include "config.h"
 
 #include "LATfield2_macros.hpp"
 #include <vtkCellData.h>

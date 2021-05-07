@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_HPP
 #define LATFIELD2_HPP
+#include "config.h"
 
 /*! \file LATfield2.hpp
  \brief LATfield2 header

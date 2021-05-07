@@ -1,5 +1,6 @@
 #ifndef PARTICLES_TOOLS_HPP
 #define PARTICLES_TOOLS_HPP
+#include "config.h"
 
 #include "LATfield2_macros.hpp"
 #include "Imag.hpp"

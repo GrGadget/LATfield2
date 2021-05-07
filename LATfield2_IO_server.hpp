@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_IOSERVER_HPP
 #define LATFIELD2_IOSERVER_HPP
+#include "config.h"
 
 /*! \file LATfield2_IO_server.hpp
  \brief LATfield2_IO_server.hpp contains the class IOserver definition.

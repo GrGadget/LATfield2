@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_SETTINGSFILE_HPP
 #define LATFIELD2_SETTINGSFILE_HPP
+#include "config.h"
 
 
 /*! \file LATfield2_SettingsFile.hpp

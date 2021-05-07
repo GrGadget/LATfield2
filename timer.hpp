@@ -1,5 +1,6 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
+#include "config.h"
 
 #include "LATfield2_macros.hpp"
 namespace LATfield2

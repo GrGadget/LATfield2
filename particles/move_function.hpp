@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_MOVE_FUNCTION_HPP
 #define LATFIELD2_MOVE_FUNCTION_HPP
+#include "config.h"
 
 #include "LATfield2_macros.hpp"
 #include "LATfield2_Field.hpp"

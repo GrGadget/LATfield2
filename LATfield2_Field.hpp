@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_FIELD_DECL_HPP
 #define LATFIELD2_FIELD_DECL_HPP
+#include "config.h"
 
 /*! \file LATfield2_Field.hpp
  \brief LATfield2_Field.hpp contain the class Field definition.

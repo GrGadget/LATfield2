@@ -1,5 +1,6 @@
 #ifndef LATFIELD_PARTICLESIO_H
 #define LATFIELD_PARTICLESIO_H
+#include "config.h"
 
 #ifdef HDF5
 #include "LATfield2_macros.hpp"

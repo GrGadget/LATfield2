@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_PROJECTIONS_HPP
 #define LATFIELD2_PROJECTIONS_HPP
+#include "config.h"
 
 #include "LATfield2_macros.hpp"
 #include "Imag.hpp"

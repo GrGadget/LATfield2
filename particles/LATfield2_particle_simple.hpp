@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_PARTICLE_DEF_HPP
 #define LATFIELD2_PARTICLE_DEF_HPP
+#include "config.h"
 
 #include "LATfield2_macros.hpp"
 #include "Imag.hpp"

@@ -1,5 +1,6 @@
 #ifndef LATFIELD_SAVE_HDF5
 #define LATFIELD_SAVE_HDF5
+#include "config.h"
 #ifdef HDF5
 
 /*! \file LATfield2_save_hdf5.h
