@@ -1,6 +1,7 @@
 #ifndef LATFIELD2_PROJECTIONS_HPP
 #define LATFIELD2_PROJECTIONS_HPP
 
+#include "LATfield2_macros.hpp"
 #include "Imag.hpp"
 #include "LATfield2_Field.hpp"
 #include "particles/LATfield2_Particles.hpp"

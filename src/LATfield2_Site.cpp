@@ -1,3 +1,4 @@
+#include "config.h"
 /*! \file LATfield2_Site.hpp
  \brief LATfield2_Site.hpp contains the Site, rKSite, and cKSite definition.
  \author David Daveio, Neil Bevis, with modifications by Wessel Valkenburg
@@ -214,6 +215,7 @@ std::ostream& operator<<(std::ostream& os,  Site& x)
 
 
 
+#ifdef FFT3D
 /* ckSite implmentation */
 
 void cKSite::initialize(Lattice& lattice) { lattice_=&lattice; directions_[0]=1; directions_[1]=2; directions_[2]=0;}
@@ -416,6 +418,6 @@ bool rKSite::setCoord(int x, int y=0, int z=0)
 }
 
 
-//#endif
+#endif
 
 }

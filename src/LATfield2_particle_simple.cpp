@@ -1,3 +1,4 @@
+#include "config.h"
 #include "particles/LATfield2_particle_simple.hpp"
 #include <iostream>
 

@@ -6,6 +6,7 @@
  \author David Daverio
  */
 
+#include "LATfield2_macros.hpp"
 #include "int2string.hpp"
 #include <cstring>
 #include "mpi.h"

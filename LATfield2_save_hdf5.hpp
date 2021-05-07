@@ -1,4 +1,7 @@
-#pragma once
+#ifndef LATFIELD_SAVE_HDF5
+#define LATFIELD_SAVE_HDF5
+#ifdef HDF5
+
 /*! \file LATfield2_save_hdf5.h
  \brief LATfield2_save_hdf5.h contains the definition of the function used for hdf5 i/o.
  \author David Daverio
@@ -41,3 +44,6 @@ halo, int lat_dim,int comp,std::string  filename_str, std::string dataset_name_s
 }
 
 }
+
+#endif
+#endif

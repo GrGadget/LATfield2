@@ -1,3 +1,4 @@
+#include "config.h"
 #include "LATfield2_Field.hpp"
 
 /*! \file LATfield2_Field.hpp

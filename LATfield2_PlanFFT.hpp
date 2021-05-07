@@ -1,5 +1,6 @@
 #ifndef LATFIELD2_PLANFFT_DECL_HPP
 #define LATFIELD2_PLANFFT_DECL_HPP
+#ifdef FFT3D
 
 #include "LATfield2_macros.hpp"
 #include "LATfield2_Field.hpp"
@@ -30,11 +31,10 @@
 
 namespace LATfield2
 {
-
-extern  const int FFT_FORWARD;
-extern  const int FFT_BACKWARD;
-extern  const int FFT_IN_PLACE;
-extern  const int FFT_OUT_OF_PLACE;
+constexpr int FFT_FORWARD = 1;
+constexpr int FFT_BACKWARD = -1;
+constexpr int FFT_IN_PLACE = 16;
+constexpr int FFT_OUT_OF_PLACE = -16;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -1595,4 +1595,5 @@ void PlanFFT<compType>::b_implement_0(fftw_complex * in, fftw_complex * out,int 
 #endif
 
 }
+#endif
 #endif

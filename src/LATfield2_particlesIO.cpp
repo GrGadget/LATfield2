@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef HDF5
 #include "particles/LATfield2_particlesIO.hpp"
 
 namespace LATfield2
@@ -172,3 +174,4 @@ void get_fileDsc_local(std::string filename,long * numParts, RealC * localBoxOff
 
 
 }
+#endif

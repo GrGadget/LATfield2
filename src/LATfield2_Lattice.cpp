@@ -1,3 +1,4 @@
+#include "config.h"
 /*! \file LATfield2_Lattice.hpp
  \brief LATfield2_Lattice.hpp contains the class Lattice definition.
  \author David Daverio, Neil Bevis
@@ -229,6 +230,8 @@ void Lattice::initialize(int dim, const int* size, int halo)
 
 	
 }
+
+#ifdef FFT3D
 void Lattice::initializeRealFFT(Lattice & lat_real, int halo)
 {
 	
@@ -299,7 +302,7 @@ void Lattice::initializeComplexFFT(Lattice & lat_real, int halo)
 	
 	this->initialize(3, lat_size, halo);
 }
-//#endif
+#endif
 
 
 void Lattice::save_arch(const string filename)

@@ -1,6 +1,7 @@
 #ifndef LATFIELD_PARTICLESIO_H
 #define LATFIELD_PARTICLESIO_H
 
+#ifdef HDF5
 #include "LATfield2_macros.hpp"
 #include "LATfield2_parallel2d.hpp"
 #include <hdf5.h>
@@ -468,4 +469,5 @@ int save_hdf5_particles(std::string filename,
 }
 
 }
+#endif
 #endif

@@ -1,3 +1,4 @@
+#include "config.h"
 #include "particles/particles_tools.hpp"
 #include "LATfield2_parallel2d.hpp"
 

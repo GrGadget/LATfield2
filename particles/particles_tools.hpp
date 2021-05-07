@@ -1,6 +1,7 @@
 #ifndef PARTICLES_TOOLS_HPP
 #define PARTICLES_TOOLS_HPP
 
+#include "LATfield2_macros.hpp"
 #include "Imag.hpp"
 #include <iostream>
 namespace LATfield2

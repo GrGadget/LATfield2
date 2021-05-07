@@ -9,7 +9,10 @@
 #include "LATfield2_macros.hpp"
 #include <cmath>
 #include <iostream>
+
+#ifdef FFT3D
 #include <fftw3.h>
+#endif
 
 namespace LATfield2
 {

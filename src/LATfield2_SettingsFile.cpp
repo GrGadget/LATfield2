@@ -1,3 +1,4 @@
+#include "config.h"
 /*! \file LATfield2_SettingsFile.hpp
  \brief LATfield2_SettingsFile.hpp contain the class SettingsFile definition.
  \author N. Bevis

@@ -15,5 +15,3 @@ foreach f : examples_files
         dependencies: [mpi,hdf5,fftw3],
         link_with: liblatfield)
 endforeach
-
-

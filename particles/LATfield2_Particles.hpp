@@ -3,11 +3,13 @@
 
 #include "LATfield2_macros.hpp"
 #include "int2string.hpp"
-#include <hdf5.h>
 #include <list>
 #include <vector>
 #include <iomanip>
 
+#ifdef HDF5
+#include <hdf5.h>
+#endif
 /**
  * \defgroup partModule Particles Module
  * @{

@@ -1,3 +1,4 @@
+#include "config.h"
 #include "LATfield2_parallel2d.hpp"
 #include <iostream>
 

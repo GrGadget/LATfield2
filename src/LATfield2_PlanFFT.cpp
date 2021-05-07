@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef FFT3D
 /*! \file LATfield2_PlanFFT.hpp
  \brief FFT wrapper
  LATfield2_PlanFFT.hpp contain the class PlanFFT definition.
@@ -9,10 +11,6 @@
 namespace LATfield2
 {
 
-const int FFT_FORWARD = 1;
-const int FFT_BACKWARD = -1;
-const int FFT_IN_PLACE = 16;
-const int FFT_OUT_OF_PLACE = -16;
 
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -97,4 +95,4 @@ temporaryMemFFT tempMemory;
 
 
 }
-
+#endif

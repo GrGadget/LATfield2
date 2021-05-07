@@ -1,3 +1,4 @@
+#include "config.h"
 #include "int2string.hpp"
 
 namespace LATfield2

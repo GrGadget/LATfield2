@@ -15,7 +15,9 @@
 #include "LATfield2_parallel2d.hpp"
 #include "Imag.hpp"
 
+#ifdef HDF5
 #include <hdf5.h>
+#endif
 
 
 namespace LATfield2
@@ -230,6 +232,7 @@ class Field
 
         FieldType& operator()(const Site& site, int k, int i, int j);
 
+#ifdef FFT3D
         /*!
          Equivalent to FieldType& operator()(const Site& site) for cKsite
          */
@@ -264,7 +267,7 @@ class Field
 		FieldType& operator()(const rKSite& site, int i, int j);
 
         FieldType& operator()(const rKSite& site,int k, int i, int j);
-
+#endif
 		//BOUNDARY UPDATE
 
         /*!
@@ -840,6 +843,7 @@ inline FieldType& Field<FieldType>::operator()(const Site& site,int k, int i, in
     return this->operator()(site.index(),k,i,j);
 }
 
+#ifdef FFT3D
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const cKSite& site)
 {
@@ -887,7 +891,7 @@ inline FieldType& Field<FieldType>::operator()(const rKSite& site, int k, int i,
 {
     return this->operator()(site.index(),k,i,j);
 }
-
+#endif
 //FIELD BOUNDARY UPDATE=========
 ////////////////////////////////
 

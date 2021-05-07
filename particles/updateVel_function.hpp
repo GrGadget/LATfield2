@@ -2,6 +2,7 @@
 #define LATFIELD2_UPDATEVEL_FUNCTION_HPP
 
 
+#include "LATfield2_macros.hpp"
 #include "LATfield2_Field.hpp"
 #include "LATfield2_Site.hpp"
 #include "Imag.hpp"

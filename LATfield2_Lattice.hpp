@@ -11,6 +11,7 @@
  
  */
 
+#include "LATfield2_macros.hpp"
 #include <string>
 
 namespace LATfield2
@@ -68,7 +69,7 @@ public:
     void initialize(int dim, const int size, int halo);
     
     
-    
+#ifdef FFT3D
     /*!
      Initialization of a lattice for Fourier space in case of real to complex transform. The Fourier space lattice size is defined according to the real space one. The fourier space lattice have "halo" ghost cells in each dimension (which can be different than the halo of the real space lattice).
      \param lat_real : pointer to a real space lattice.
@@ -82,7 +83,7 @@ public:
      \param halo : size of the halo (same for each dimension)
      */
     void initializeComplexFFT(Lattice & lat_real, int halo);
-//#endif
+#endif
     
     
     

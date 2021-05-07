@@ -1,3 +1,4 @@
+#include "config.h"
 #include "particles/updateVel_function.hpp"
 namespace LATfield2
 {

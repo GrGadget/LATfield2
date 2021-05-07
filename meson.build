@@ -8,9 +8,17 @@ cpp=meson.get_compiler('cpp')
 mpi=dependency('mpi',language: 'cpp')
 boost = dependency('boost', modules: ['mpi','serialization','unit_test_framework'],required: false)
 mpirun = find_program('mpirun')
-fftw3 = dependency('fftw3')
-hdf5 = dependency('hdf5')
 pkg=import('pkgconfig')
+
+deps = [mpi]
+fftw3 = dependency('fftw3', required: get_option('FFT3D'))
+if (fftw3.found() and get_option('FFT3D'))
+    deps += fftw3
+endif
+hdf5 = dependency('hdf5', required: get_option('HDF5'))
+if (hdf5.found() and get_option('HDF5'))
+    deps += hdf5
+endif
 
 include=include_directories('.')
 
@@ -29,18 +37,31 @@ latfield_headers = files(
     'LATfield2_save_hdf5_pixie.h',
     'LATfield2_SettingsFile.hpp',
     'LATfield2_Site.hpp',
-    'looping_macro.hpp',
     'timer.hpp')
 
 subdir('particles')
 subdir('src')
 
+conf_data = configuration_data({ 
+    'FFT3D' :get_option('FFT3D'),
+    'HDF5' :get_option('HDF5'),
+    'H5_HAVE_PARALLEL' :get_option('H5_HAVE_PARALLEL'),
+    'SINGLE' :get_option('SINGLE'),
+    'EXTERNAL_IO' :get_option('EXTERNAL_IO')
+    })
+config=configure_file(
+    input: 'config.h.in', 
+    output: 'config.h',
+    configuration: conf_data)
 
-liblatfield = library('latfield',latfield_headers,part_headers,sources,
+liblatfield = library('latfield',latfield_headers,part_headers,sources,config,
     include_directories: include,
     install: true,
-    dependencies: [mpi,hdf5,fftw3])
+    dependencies: deps)
+
 install_headers(latfield_headers)
+install_headers(config)
+
 pkg.generate(liblatfield,
     description: 'LATfield2')
 

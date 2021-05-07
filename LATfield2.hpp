@@ -20,21 +20,6 @@
 #include <vector>
 
 
-#ifdef FFT3D
-#include "fftw3.h"
-#endif
-
-
-#ifdef HDF5
-#include "hdf5.h"
-
-
-
-
-
-#endif
-
-
 #include "LATfield2_Lattice.hpp"
 
 #ifdef EXTERNAL_IO
@@ -55,13 +40,10 @@ namespace LATfield2
 
 
 
-#ifdef HDF5
-#include "hdf5.h"
 #ifdef H5_HAVE_PIXIE
 #include "LATfield2_save_hdf5_pixie.h"
 #else
 #include "LATfield2_save_hdf5.hpp"
-#endif
 #endif
 
 
@@ -77,10 +59,5 @@ namespace LATfield2
 #ifdef CATALAT
     #include "LATfield2_catalyst.hpp"
 #endif
-
-//macros
-#include  "looping_macro.hpp"
-
-
 
 #endif

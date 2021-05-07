@@ -11,6 +11,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "LATfield2_macros.hpp"
 
 namespace LATfield2
 {

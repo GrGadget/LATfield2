@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef HDF5
 #include "LATfield2_save_hdf5.hpp"
 #include "LATfield2_parallel2d.hpp"
 
@@ -367,3 +369,4 @@ namespace LATfield2
         return -1;
 	}
 }
+#endif
