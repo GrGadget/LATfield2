@@ -1,5 +1,4 @@
-#include "config.h"
-#include "particles/projections.hpp"
+#include "LATfield2/particles/projections.hpp"
 
 namespace LATfield2
 {

@@ -1,4 +1,12 @@
-#include "LATfield2/particles/updateVel_function.hpp"
+#ifndef LATFIELD2_UPDATEVEL_FUNCTION_HPP
+#define LATFIELD2_UPDATEVEL_FUNCTION_HPP
+
+#include "LATfield2/macros.hpp"
+#include "LATfield2/Field.hpp"
+#include "LATfield2/Site.hpp"
+#include "LATfield2/Imag.hpp"
+#include "LATfield2/particles/simple.hpp"
+
 namespace LATfield2
 {
 
@@ -17,22 +25,8 @@ Real updateVel_simple(double /*dtau*/,
                           int /*nfield*/,
                           double * /*params*/,
                           double * /*outputs*/,
-                          int /*noutputs*/)
-{
-
-    double v2{};
-
-    
-    for(int i=0;i<3;i++)
-    {
-        (*part).vel[i] = (*part).vel[i];
-        v2 += (*part).vel[i] * (*part).vel[i];
-    }
-    
-    
-    return v2;
-
-}
+                          int /*noutputs*/);
 
 /**@}*/
 }
+#endif

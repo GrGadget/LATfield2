@@ -1,4 +1,17 @@
-#include "LATfield2/particles/move_function.hpp"
+#ifndef LATFIELD2_MOVE_FUNCTION_HPP
+#define LATFIELD2_MOVE_FUNCTION_HPP
+
+#include "LATfield2/macros.hpp"
+#include "LATfield2/Field.hpp"
+#include "LATfield2/Site.hpp"
+#include "LATfield2/Imag.hpp"
+#include "LATfield2/particles/simple.hpp"
+
+
+/**
+ * \addtogroup prartClass
+ * @{
+ */
 
 namespace LATfield2
 {
@@ -13,12 +26,8 @@ void move_particles_simple(double dtau,
                                int /*nfield*/,
                                double * /*params*/,
                                double * /*outputs*/,
-                               int /*noutputs*/){
-
-
-    //double a;
-    //a = 1 + 23;
-    for (int l=0;l<3;l++) (*part).pos[l] += dtau*(*part).vel[l];
-   
+                               int /*noutputs*/);
 }
-}
+/**@}*/
+
+#endif
