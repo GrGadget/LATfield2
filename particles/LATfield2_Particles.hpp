@@ -625,10 +625,6 @@ Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF,
       {
           for (it=(field_part_)(xPart).parts.begin(); it != (field_part_)(xPart).parts.end(); ++it)
           {
-              for (int l=0; l<3; l++)
-              {
-                frac[l] =  (*it).pos[l]/lat_resolution_ - xPart.coord(l);
-              }
               Real v2 = updateF(
                          *it, // reference to particle
                          part_global_info_,
@@ -637,7 +633,7 @@ Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF,
               
               maxvel = std::max(maxvel,v2);
 
-              for(int i=0;i<noutput;i++)
+              for(size_t i=0;i<output.size();i++)
               {
                   if(reduce_type[i] & (SUM | SUM_LOCAL))
                   {
@@ -659,7 +655,7 @@ Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF,
       }
   }
 
-  for(int i=0;i<noutput;i++)
+  for(size_t i=0;i<output.size();i++)
   {
       if(reduce_type[i] & SUM)
       {
