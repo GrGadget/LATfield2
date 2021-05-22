@@ -1,7 +1,9 @@
 #ifndef LATFIELD2_PARTICLES_HPP
 #define LATFIELD2_PARTICLES_HPP
 
-
+#include <cmath>
+#include <vector>
+#include <limits>
 
 /**
  * \defgroup partModule Particles Module
@@ -183,6 +185,11 @@ public:
   bool addParticle_global(part newPart);
 
   void prepare_RK();
+    
+    template<class Functor>
+    Real updateVel(Functor updateF,
+                   std::vector<double> & output= {},
+                   const std::vector<int>& reduce_type={});
 
 
     template<typename mappingClass>
@@ -579,6 +586,93 @@ void Particles<part,part_info,part_dataType>::prepare_RK()
     }
   }
 
+}
+
+template <typename part, typename part_info, typename part_dataType>
+template<class Functor>
+Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF,
+               std::vector<double>& output,
+               const std::vector<int>& reduce_type)
+{
+  Site  xPart(lat_part_);
+
+  typename std::list<part>::iterator it;
+  Real maxvel = 0.;
+  
+  for(size_t i=0;i<output.size();i++)
+  {
+      if(reduce_type[i] & (SUM | SUM_LOCAL))
+      {
+          output[i]=0;
+      }
+      else if(reduce_type[i] & (MIN | MIN_LOCAL))
+      {
+          output[i]=std::numeric_limits<double>::max();
+      }
+      else if(reduce_type[i] & (MAX | MAX_LOCAL))
+      {
+          output[i]=std::numeric_limits<double>::min();
+      }
+  }
+  std::vector<double> output_temp(output.size());
+
+  for(xPart.first() ; xPart.test(); xPart.next())
+  {
+      if(field_part_(xPart).size!=0)
+      {
+          for (it=(field_part_)(xPart).parts.begin(); it != (field_part_)(xPart).parts.end(); ++it)
+          {
+              for (int l=0; l<3; l++)
+              {
+                frac[l] =  (*it).pos[l]/lat_resolution_ - xPart.coord(l);
+              }
+              Real v2 = updateF(
+                         *it, // reference to particle
+                         part_global_info_,
+                         xPart, // site
+                         output_temp);
+              
+              maxvel = std::max(maxvel,v2);
+
+              for(int i=0;i<noutput;i++)
+              {
+                  if(reduce_type[i] & (SUM | SUM_LOCAL))
+                  {
+                      output[i]+=output_temp[i];
+                  }
+                  else if(reduce_type[i] & (MIN | MIN_LOCAL))
+                  {
+                      output[i] = std::min(output[i],output_temp[i]);
+                  }
+                  else if(reduce_type[i] & (MAX | MAX_LOCAL))
+                  {
+                      output[i] = std::max(output[i],output_temp[i]);
+                  }
+              }
+
+
+
+          }
+      }
+  }
+
+  for(int i=0;i<noutput;i++)
+  {
+      if(reduce_type[i] & SUM)
+      {
+          parallel.sum(output[i]);
+      }
+      else if(reduce_type[i] & MIN)
+      {
+          parallel.min(output[i]);
+      }
+      else if(reduce_type[i] & MAX)
+      {
+          parallel.max(output[i]);
+      }
+  }
+
+  return std::sqrt(maxvel);
 }
 
 template <typename part, typename part_info, typename part_dataType>
