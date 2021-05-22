@@ -23,12 +23,12 @@ void Site::initialize(Lattice& lattice, long index) { lattice_ = &lattice; index
 
 //NEIGHBOURING SITE OPERATORS==
 
-Site Site::operator+(int direction)
+Site Site::operator+(int direction) const
 {
 	return Site( *lattice_, index_ + lattice_->jump(direction) );
 }
 
-Site Site::operator-(int direction)
+Site Site::operator-(int direction) const
 {
 	return Site( *lattice_, index_ - lattice_->jump(direction) );
 }
@@ -127,14 +127,14 @@ long Site::index() const { return index_; }
 
 void Site::setIndex(long new_index) {index_ = new_index;}
 
-int Site::coord(int direction) ////////sensible a quelle dim est scatter (seul modif a faire ici)
+int Site::coord(int direction) const////////sensible a quelle dim est scatter (seul modif a faire ici)
 {
 	if(direction<lattice_->dim()-2) { return coordLocal(direction); }
 	else if (direction==lattice_->dim()-2) {return coordLocal(direction)+lattice_->coordSkip()[1]; }
 	else {return coordLocal(direction)+lattice_->coordSkip()[0]; }
 }
 
-int Site::coordLocal(int direction)
+int Site::coordLocal(int direction)const
 {
 	if(direction==lattice_->dim()-1)
 	{

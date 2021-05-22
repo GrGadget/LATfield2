@@ -175,6 +175,7 @@ class Field
          \param index: displacment on the data_ array.
          */
 		FieldType& operator()(long index);
+		const FieldType& operator()(long index)const;
 
         /*!
          Returns the value of the field stored in data_[component + index*components_]. User should used operator()(const Site& site, int component) to refer and access to the value of the field.
@@ -207,6 +208,7 @@ class Field
          \sa To have more description see the Site class documentation.
          */
 		FieldType& operator()(const Site& site);
+		const FieldType& operator()(const Site& site)const;
 
         /*!
          Returns the value of a (vector) field's component at the position pointed by the Site object (data_[component + site.index()*components_]).
@@ -784,6 +786,11 @@ inline FieldType& Field<FieldType>::operator()(long index)
 {
 	return data_[index];
 }
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(long index)const
+{
+	return data_[index];
+}
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(long index, int component)
@@ -821,6 +828,11 @@ inline FieldType& Field<FieldType>::operator()(long index, int k, int i, int j)
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const Site& site)
+{
+	return this->operator()(site.index());
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const Site& site)const
 {
 	return this->operator()(site.index());
 }

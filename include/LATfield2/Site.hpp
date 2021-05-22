@@ -129,13 +129,13 @@ public:
    The + operator is used to make a displacement of +1 site the the asked direction.
    \param direction : direction of the displacement
    */
-		Site operator+(int direction);
+		Site operator+(int direction) const;
   /*!
    Overloaded operator -
    The - operator is used to make a displacement of -1 site the the asked direction.
    \param direction : direction of the displacement
    */
-		Site operator-(int direction);
+		Site operator-(int direction) const;
 
 		Site move(int direction);
     Site move(int direction, int step);
@@ -165,13 +165,13 @@ public:
    \param direction : label of the coordinate.
    \return site coordinate of the "direction" dimension
    */
-		int coord(int direction);
+		int coord(int direction)const;
   /*!
    Method which return the local site coordinate of a give dimension
    \param direction : label of the coordinate.
    \return site local coordinate of the "direction" dimension
    */
-		int coordLocal(int direction);
+		int coordLocal(int direction)const;
   /*!
    Method to set the site to a given coordinate.
    \param r : array which contain the coordinate. The array size must be equal to the number of dimension of the lattice
