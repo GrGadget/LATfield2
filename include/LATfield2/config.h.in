@@ -1,0 +1,11 @@
+#ifndef LATFIELD2_CONFIG_H
+#define LATFIEND2_CONFIG_H
+
+#mesondefine FFT3D
+#mesondefine HDF5
+#mesondefine H5_HAVE_PARALLEL
+
+#mesondefine SINGLE
+#mesondefine EXTERNAL_IO
+
+#endif

@@ -1,0 +1,17 @@
+sources = files(
+    'parallel2d.cpp',
+    'Field.cpp',
+    'Lattice.cpp',
+    'Site.cpp',
+    'PlanFFT.cpp',
+    'SettingsFile.cpp',
+    'simple.cpp',
+    'IO.cpp',
+    'int2string.cpp',
+    'projections.cpp',
+    'move_function.cpp',
+    'updateVel_function.cpp',
+    'tools.cpp',
+    'rk4.cpp',
+    'save_hdf5.cpp',
+    'LATfield2.cpp')
