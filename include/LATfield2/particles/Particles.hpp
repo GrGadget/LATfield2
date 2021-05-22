@@ -200,9 +200,7 @@ public:
   void prepare_RK();
     
     template<class Functor>
-    Real updateVel(Functor updateF,
-                   std::vector<double> & output= {},
-                   const std::vector<int>& reduce_type={});
+    Real updateVel(Functor updateF);
 
 
     template<typename mappingClass>
@@ -384,7 +382,7 @@ void Particles<part,part_info,part_dataType>::initialize(part_info part_global_i
   part_datatype_=part_datatype;
   numParticles_ = 0;
 
-  lat_part_.initialize(lat_part->dim(),lat_part->size(),0);
+  lat_part_.initialize(lat_part->dim(),lat_part->size(),lat_part->halo());
 
   field_part_.initialize(lat_part_);
   field_part_.alloc();
@@ -605,32 +603,16 @@ void Particles<part,part_info,part_dataType>::prepare_RK()
 
 template <typename part, typename part_info, typename part_dataType>
 template<class Functor>
-Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF,
-               std::vector<double>& output,
-               const std::vector<int>& reduce_type)
+Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF)
 {
   Site  xPart(lat_part_);
+  //Site  xphi;
+  //xphi.initialize(phi.lattice());
+  //xphi.first();
 
   typename std::list<part>::iterator it;
   Real maxvel = 0.;
   
-  for(size_t i=0;i<output.size();i++)
-  {
-      if(reduce_type[i] & (SUM | SUM_LOCAL))
-      {
-          output[i]=0;
-      }
-      else if(reduce_type[i] & (MIN | MIN_LOCAL))
-      {
-          output[i]=std::numeric_limits<double>::max();
-      }
-      else if(reduce_type[i] & (MAX | MAX_LOCAL))
-      {
-          output[i]=std::numeric_limits<double>::min();
-      }
-  }
-  std::vector<double> output_temp(output.size());
-
   for(xPart.first() ; xPart.test(); xPart.next())
   {
       if(field_part_(xPart).size!=0)
@@ -639,52 +621,17 @@ Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF,
           {
               Real v2 = updateF(
                          *it, // reference to particle
-                         part_global_info_,
-                         xPart, // site
-                         output_temp);
+                         xPart); // site
               
               maxvel = std::max(maxvel,v2);
-
-              for(size_t i=0;i<output.size();i++)
-              {
-                  if(reduce_type[i] & (SUM | SUM_LOCAL))
-                  {
-                      output[i]+=output_temp[i];
-                  }
-                  else if(reduce_type[i] & (MIN | MIN_LOCAL))
-                  {
-                      output[i] = std::min(output[i],output_temp[i]);
-                  }
-                  else if(reduce_type[i] & (MAX | MAX_LOCAL))
-                  {
-                      output[i] = std::max(output[i],output_temp[i]);
-                  }
-              }
-
-
-
           }
       }
-  }
-
-  for(size_t i=0;i<output.size();i++)
-  {
-      if(reduce_type[i] & SUM)
-      {
-          parallel.sum(output[i]);
-      }
-      else if(reduce_type[i] & MIN)
-      {
-          parallel.min(output[i]);
-      }
-      else if(reduce_type[i] & MAX)
-      {
-          parallel.max(output[i]);
-      }
+      //xphi.next();
   }
 
   return std::sqrt(maxvel);
 }
+
 
 template <typename part, typename part_info, typename part_dataType>
 template <typename mappingClass>
