@@ -7,7 +7,7 @@ namespace LATfield2{
 using std::endl;
 using std::cout;
 
-Real get_lattice_resolution(int npts[3],LATfield2::Real boxSize[3])
+Real get_lattice_resolution(const int npts[3],const LATfield2::Real boxSize[3])
 {
   LATfield2::Real latRes[3];
 

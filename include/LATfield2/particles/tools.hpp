@@ -16,7 +16,7 @@ namespace LATfield2
 {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-LATfield2::Real get_lattice_resolution(int npts[3],Real boxSize[3]);
+LATfield2::Real get_lattice_resolution(const int npts[3],const Real boxSize[3]);
 
 #define CREATE_MEMBER_DETECTOR(X)                \
 template<typename T, typename = std::void_t<> >  \

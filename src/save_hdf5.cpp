@@ -4,8 +4,12 @@
 #ifdef HDF5
 namespace LATfield2
 {
-   int save_hdf5_externC(char *data,long file_offset[2],int *size,int *
-   sizeLocal,int halo, int lat_dim,int comp,hid_t array_type,int
+   int save_hdf5_externC(
+        char *data,
+        const long file_offset[2],
+        const int *size,
+        const int *sizeLocal,
+        int halo, int lat_dim,int comp,hid_t array_type,int
    array_size,std::string  filename_str, std::string dataset_name_str)
    {
 
@@ -223,8 +227,12 @@ namespace LATfield2
 
 
  }
-	int load_hdf5_externC(char *data,long file_offset[2],int *size,int *
-    sizeLocal,int halo, int lat_dim,std::string  filename_str, std::string dataset_name_str)
+    int load_hdf5_externC(
+        char *data,
+        const long file_offset[2],
+        const int *size,
+        const int *sizeLocal,
+        int halo, int lat_dim,std::string  filename_str, std::string dataset_name_str)
 	{
 
 

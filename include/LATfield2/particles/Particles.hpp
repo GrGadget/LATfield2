@@ -299,23 +299,25 @@ public:
      Method to get the Lattice on which the particles are maped.
      \return lat_part_
      */
-    Lattice & lattice(){return lat_part_;};
+    const Lattice & lattice() const {return lat_part_;};
     /*!
      Method to get the Field in which the particles lists are strored.
      \return field_part_
      */
-    Field<partList<part> > & field(){return field_part_;};
+    const Field<partList<part> > & field()const {return field_part_;};
+    Field<partList<part> > & field() {return field_part_;};
     /*!
      Method to get the resolution of a cell, in units used for the particle positions.
      \return field_part_
      */
-    Real res(){return lat_resolution_;};
+    Real res()const {return lat_resolution_;};
 
     /*!
      Method to get the global properties of the particles type of this instance of the class Particles.
      \return part_global_info_: structure containing the global properties of the particles.
      */
     part_info * parts_info();
+    const part_info * parts_info()const;
 
     /*!
      Method to get the mass type. The mass can be a global property (GLOBAL_MASS), a individual property (INDIVIDUAL_MASS) or can be not defined (NO_MASS).
@@ -360,6 +362,11 @@ protected:
 
 template <typename part, typename part_info, typename part_dataType>
 part_info * Particles<part,part_info,part_dataType>::parts_info()
+{
+    return &part_global_info_;
+}
+template <typename part, typename part_info, typename part_dataType>
+const part_info * Particles<part,part_info,part_dataType>::parts_info()const
 {
     return &part_global_info_;
 }

@@ -90,65 +90,65 @@ public:
     /*!
      \return int. Number of dimensions of the lattice.
      */
-    int  dim();
+    int  dim()const {return dim_;}
     /*!
      \return int. Size of the halo (ghost cells).
      */
-    int  halo();
+    int  halo() const { return halo_; }
     
     /*!
      \return int*. Pointer to the array of the size of each dimension of the lattice.
      */
-    int* size();
+    const int* size() const{ return size_; }
     
     /*!
      Function which returns the size of a given dimension of the lattice.
      \param direction : asked dimension.
      \return int. Global size of the lattice in the given dimension.
      */
-    int  size(int direction);  //Size in a particular dimension
+    int  size(int i) const { return size_[i]; }
     
     /*!
      \return int*. Pointer to the array of the size of each dimension of the sublattice stored in this MPI process.
      */
-    int* sizeLocal();               //Local version
+    const int * sizeLocal()const { return sizeLocal_; }
     
     /*!
      Function which returns the size of a given dimension of the sublattice stored in this MPI process.
      \param direction : asked dimension.
      \return int. Global size of the sublattice (of this MPI process) in the given dimension.
      */
-    int  sizeLocal(int direction);  //Local version
+    int  sizeLocal(int i)const { return sizeLocal_[i]; }
     
     
     /*!
      \return long. Number of sites on the lattice (excluding halo sites).
      */
-    long  sites();              //Number of (global) sites
+    long  sites() const { return sites_; }
     /*!
      \return long. Number of sites on the lattice (including halo sites).
      */
-    long  sitesGross();         //Number of (global) sites including halo
+    long  sitesGross() const { return sitesGross_; }
     
     /*!
      \return long. Number of sites (excluding halo sites) of the sublattice stored in this MPI process.
      */
-    long  sitesLocal();              //Local version
+    long  sitesLocal() const { return sitesLocal_; }
     
     /*!
      \return long. Number of sites (including halo sites) of the sublattice stored in this MPI process.
      */
-    long  sitesLocalGross();         //Local version
+    long  sitesLocalGross()const { return sitesLocalGross_; }
     
     /*!
      \return long. Array index of the first site which is not within the halo.
      */
-    long siteFirst();
+    long siteFirst() const { return siteFirst_; }
     
     /*!
      \return long. Array index of the last site which is not within the halo.
      */
-    long siteLast();
+    long siteLast() const { return siteLast_; }
     
     
     
@@ -157,22 +157,22 @@ public:
      \param direction : asked direction.
      \return long. Number of array elements to jump.
      */
-    long  jump(int direction);       //Number of sites jumped to move in direction
+    long  jump(int i) const { return jump_[i]; }
     
     /*!
      \return long. Number of sites before first local site in lattice. Should not be used by users.
      */
-    long  sitesSkip();               //Number of sites before first local site in lattice (say in a file)
+    long  sitesSkip()const { return sitesSkip_; }
     
     /*!
      \return long. Number of sites before first local site in lattice. Should not be used by users.
      */
-    long  sitesSkip2d();
+    long  sitesSkip2d() const { return sitesSkip2d_; }
     
     /*!
      \return *long. Pointer to an array which store the last 2 dimensions coordinate of the first local(in this MPI process) sites. Index 0 is for dim-1, index 1 is for dim-2/
      */
-    long*  coordSkip();              //Number to add to coord[dim_-1] to get global value
+    const long*  coordSkip()const { return coordSkip_; }
     
     /*!
      Function which save in serial and in ASCII the global and local description of the Lattice. Usefull to read a file writen by fast_save or fast_write methods of the Field class.
@@ -185,14 +185,14 @@ public:
      
      \sa save_arch(const string filename)
      */
-    bool is_arch_saved();
+    bool is_arch_saved() const {return arch_saved_;}
     
     int getRank(int* coord) ; //return the world rank of the process who get the lattices site "coord"
     int getRankDim0(int coord) ;
     int getRankDim1(int coord) ;
     
-    int * sizeLocalAllProcDim0();
-    int * sizeLocalAllProcDim1();
+    const int * sizeLocalAllProcDim0()const{ return sizeLocalAllProcDim0_; }
+    const int * sizeLocalAllProcDim1()const{ return sizeLocalAllProcDim1_; }
     
     
 private:

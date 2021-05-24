@@ -20,7 +20,7 @@ public:
 		//CONSTRUCTORS=================
 
   //! Constructor.
-		Site();
+    Site();
 
   /*!
    Constructor with initialization.
@@ -30,7 +30,7 @@ public:
    \sa initialize(Lattice& lattice)
 
    */
-		Site(Lattice& lattice);
+    Site(const Lattice& lattice);
 
   /*!
    Constructor with initialization.
@@ -41,21 +41,21 @@ public:
    \sa initialize(Lattice& lattice, long index)
 
    */
-		Site(Lattice& lattice, long index);
+    Site(const Lattice& lattice, long index);
 
 		//INITIALIZATION=================
 		/*!
      Initialization.
      \param lattice : the lattice on which the Site is defined.
      */
-		void initialize(Lattice& lattice);
+    void initialize(const Lattice& lattice);
 
   /*!
    Constructor with initialization.
    \param lattice : the lattice on which the Site is defined.
    \param index   : set the current index of the field.
    */
-		void initialize(Lattice& lattice, long index);
+    void initialize(const Lattice& lattice, long index);
 
 		//LOOPING OPERATIONS==============
   /*!
@@ -194,10 +194,10 @@ public:
   /*!
    \return Returns the pointer to the lattice on which the site is defined.
    */
-		Lattice& lattice();
+		const Lattice& lattice();
 
 protected:
-		Lattice* lattice_;
+        const Lattice* lattice_;
 		long index_;
 };
 
@@ -218,11 +218,11 @@ class cKSite:public Site{
 public:
 
   cKSite(){;}
-  cKSite(Lattice& lattice){initialize(lattice);}
-  cKSite(Lattice& lattice, long index){initialize(lattice, index);}
+  cKSite(const Lattice& lattice){initialize(lattice);}
+  cKSite(const Lattice& lattice, long index){initialize(lattice, index);}
 
-  void initialize(Lattice& lattice);
-  void initialize(Lattice& lattice, long index);
+  void initialize(const Lattice& lattice);
+  void initialize(const Lattice& lattice, long index);
 
 
   cKSite operator+(int asked_direction);
@@ -256,11 +256,11 @@ class rKSite:public Site{
 public:
 
   rKSite(){;}
-  rKSite(Lattice& lattice){initialize(lattice);}
-  rKSite(Lattice& lattice, long index){initialize(lattice, index);}
+  rKSite(const Lattice& lattice){initialize(lattice);}
+  rKSite(const Lattice& lattice, long index){initialize(lattice, index);}
 
-  void initialize(Lattice& lattice);
-  void initialize(Lattice& lattice, long index);
+  void initialize(const Lattice& lattice);
+  void initialize(const Lattice& lattice, long index);
 
 
   rKSite operator+(int asked_direction);

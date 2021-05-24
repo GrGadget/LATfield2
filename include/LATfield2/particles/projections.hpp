@@ -86,7 +86,8 @@ constexpr int CIC_mapv2[2][2][2][2] =   { { {{24,28},{25,29}},{{26,30},{27,31}} 
  \sa projection_init(Field<Real> * f)
  */
 template<typename part, typename part_info, typename part_dataType>
-void scalarProjectionCIC_project(Particles<part,part_info,part_dataType> * parts,Field<Real> * rho)
+void scalarProjectionCIC_project(
+    const Particles<part,part_info,part_dataType> * parts,Field<Real> * rho)
 {
 
     if(rho->lattice().halo() == 0)
@@ -150,7 +151,7 @@ void scalarProjectionCIC_project(Particles<part,part_info,part_dataType> * parts
             for(int i=0;i<3;i++)referPos[i]=xPart.coord(i)*latresolution;
             for(int i=0;i<8;i++)localCube[i]=0;
 
-            for (it=(parts->field())(xPart).parts.begin(); it != (parts->field())(xPart).parts.end(); ++it)
+            for (auto it=(parts->field())(xPart).parts.begin(); it != (parts->field())(xPart).parts.end(); ++it)
             {
                 for(int i =0;i<3;i++)
                 {
@@ -291,7 +292,7 @@ void vectorProjectionCICNGP_project(Particles<part,part_info,part_dataType> * pa
 
             for(int i=0;i<12;i++)vi[i]=0.0;
 
-            for (it=(parts->field())(xPart).parts.begin(); it != (parts->field())(xPart).parts.end(); ++it)
+            for (auto it=(parts->field())(xPart).parts.begin(); it != (parts->field())(xPart).parts.end(); ++it)
             {
                 for(int i =0;i<3;i++)
                 {
@@ -458,7 +459,7 @@ void symtensorProjectionCICNGP_project(Particles<part,part_info,part_dataType> *
             for(int i=0;i<6;i++)tij[i]=0.0;
             for(int i=0;i<24;i++)tii[i]=0.0;
 
-            for (it=(parts->field())(xPart).parts.begin(); it != (parts->field())(xPart).parts.end(); ++it)
+            for (auto it=(parts->field())(xPart).parts.begin(); it != (parts->field())(xPart).parts.end(); ++it)
             {
                 for(int i =0;i<3;i++)
                 {

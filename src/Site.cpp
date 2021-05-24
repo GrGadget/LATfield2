@@ -13,13 +13,13 @@ namespace LATfield2
 //CONSTRUCTORS===================
 
 Site::Site() {index_=0; lattice_ = NULL;}
-Site::Site(Lattice& lattice) { initialize(lattice); }
-Site::Site(Lattice& lattice, long index) { initialize(lattice, index); }
+Site::Site(const Lattice& lattice) { initialize(lattice); }
+Site::Site(const Lattice& lattice, long index) { initialize(lattice, index); }
 
 //INITIALIZATION=================
 
-void Site::initialize(Lattice& lattice) { lattice_=&lattice; index_=0l;}
-void Site::initialize(Lattice& lattice, long index) { lattice_ = &lattice; index_ = index; }
+void Site::initialize(const Lattice& lattice) { lattice_=&lattice; index_=0l;}
+void Site::initialize(const Lattice& lattice, long index) { lattice_ = &lattice; index_ = index; }
 
 //NEIGHBOURING SITE OPERATORS==
 
@@ -195,7 +195,7 @@ bool Site::setCoordLocal(int *r)
     this->indexAdvance(jump);
     return true;
 }
-Lattice& Site::lattice() { return *lattice_ ; }
+const Lattice& Site::lattice() { return *lattice_ ; }
 
 
 std::ostream& operator<<(std::ostream& os,  Site& x)
@@ -218,8 +218,8 @@ std::ostream& operator<<(std::ostream& os,  Site& x)
 #ifdef FFT3D
 /* ckSite implmentation */
 
-void cKSite::initialize(Lattice& lattice) { lattice_=&lattice; directions_[0]=1; directions_[1]=2; directions_[2]=0;}
-void cKSite::initialize(Lattice& lattice, long index) { lattice_ = &lattice; index_ = index; directions_[0]=1; directions_[1]=2; directions_[2]=0; }
+void cKSite::initialize(const Lattice& lattice) { lattice_=&lattice; directions_[0]=1; directions_[1]=2; directions_[2]=0;}
+void cKSite::initialize(const Lattice& lattice, long index) { lattice_ = &lattice; index_ = index; directions_[0]=1; directions_[1]=2; directions_[2]=0; }
 
 cKSite cKSite::operator+(int asked_direction)
 {
@@ -318,8 +318,8 @@ bool cKSite::setCoord(int x, int y=0, int z=0)
 }
 
 /* rkSite implmentation */
-void rKSite::initialize(Lattice& lattice) { lattice_=&lattice; directions_[0]=0; directions_[1]=2; directions_[2]=1;}
-void rKSite::initialize(Lattice& lattice, long index) { lattice_ = &lattice; index_ = index; directions_[0]=0; directions_[1]=2; directions_[2]=1; }
+void rKSite::initialize(const Lattice& lattice) { lattice_=&lattice; directions_[0]=0; directions_[1]=2; directions_[2]=1;}
+void rKSite::initialize(const Lattice& lattice, long index) { lattice_ = &lattice; index_ = index; directions_[0]=0; directions_[1]=2; directions_[2]=1; }
 
 rKSite rKSite::operator+(int asked_direction)
 {

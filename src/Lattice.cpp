@@ -417,27 +417,5 @@ int Lattice::getRankDim1(int coord)
 
 //MISCELLANEOUS======================
 
-bool Lattice::is_arch_saved() {return arch_saved_;}
-int  Lattice::dim() { return dim_; }
-int* Lattice::size() { return size_; }
-int  Lattice::size(int i) { return size_[i]; }
-long  Lattice::sites() { return sites_; }
-long  Lattice::sitesGross() { return sitesGross_; }
-int  Lattice::halo() { return halo_; }
-
-int* Lattice::sizeLocal() { return sizeLocal_; }
-int  Lattice::sizeLocal(int i) { return sizeLocal_[i]; }
-long  Lattice::sitesLocal() { return sitesLocal_; }
-long  Lattice::sitesLocalGross() { return sitesLocalGross_; }
-
-long  Lattice::jump(int i) { return jump_[i]; }
-long  Lattice::sitesSkip() { return sitesSkip_; }
-long  Lattice::sitesSkip2d() { return sitesSkip2d_; }
-long*  Lattice::coordSkip() { return coordSkip_; }
-long Lattice::siteFirst() { return siteFirst_; }
-long Lattice::siteLast() { return siteLast_; }
-
-int * Lattice::sizeLocalAllProcDim0(){ return sizeLocalAllProcDim0_; }
-int * Lattice::sizeLocalAllProcDim1(){ return sizeLocalAllProcDim1_; }
 
 }
