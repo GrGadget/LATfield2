@@ -31,6 +31,16 @@ Lattice::Lattice()
 	status_=0;
 	arch_saved_=false;
 }
+Lattice::Lattice(const Lattice& lat, int halo, FFT fft_type)
+{
+    status_=0;
+    arch_saved_=false;
+    
+    if(fft_type==FFT::RealToComplex)
+        initializeRealFFT(lat,halo);
+    else
+        initializeComplexFFT(lat,halo);
+}
 
 Lattice::Lattice(int dim, const int* size, int halo)
 {
@@ -231,7 +241,7 @@ void Lattice::initialize(int dim, const int* size, int halo)
 }
 
 #ifdef FFT3D
-void Lattice::initializeRealFFT(Lattice & lat_real, int halo)
+void Lattice::initializeRealFFT(const Lattice & lat_real, int halo)
 {
 	
 	if(lat_real.dim()!=3)
@@ -266,7 +276,7 @@ void Lattice::initializeRealFFT(Lattice & lat_real, int halo)
 	
 	this->initialize(3, lat_size, halo);
 }
-void Lattice::initializeComplexFFT(Lattice & lat_real, int halo)
+void Lattice::initializeComplexFFT(const Lattice & lat_real, int halo)
 {
 	
 	if(lat_real.dim()!=3)

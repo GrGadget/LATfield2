@@ -22,8 +22,15 @@ namespace LATfield2
 class Lattice
 {
 public:
+    enum class FFT{
+        RealToComplex,
+        ComplexToComplex
+    };
+
     //! Constructor.
     Lattice();
+    
+    Lattice(const Lattice& lat, int halo, FFT fft_type);
     
     Lattice(const Lattice&) = delete;
     Lattice& operator=(const Lattice&) = delete;
@@ -75,14 +82,14 @@ public:
      \param lat_real : pointer to a real space lattice.
      \param halo : size of the halo (same for each dimension)
      */
-    void initializeRealFFT(Lattice & lat_real, int halo);
+    void initializeRealFFT(const Lattice & lat_real, int halo);
     
     /*!
      Initialization of a lattice for Fourier space in case of complex to complex transform. The Fourier space lattice size is defined according to the real space one.. The fourier space lattice have "halo" ghost cells in each dimension (which can be different than the halo of the real space lattice).
      \param lat_real : pointer to a real space lattice.
      \param halo : size of the halo (same for each dimension)
      */
-    void initializeComplexFFT(Lattice & lat_real, int halo);
+    void initializeComplexFFT(const Lattice & lat_real, int halo);
 #endif
     
     
