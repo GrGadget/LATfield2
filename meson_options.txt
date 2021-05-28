@@ -1,5 +1,4 @@
 option('HDF5',type: 'boolean', value: true)
-option('H5_HAVE_PARALLEL',type: 'boolean', value: true)
 option('FFT3D',type: 'boolean', value: true)
 
 option('EXTERNAL_IO',type: 'boolean', value: false)

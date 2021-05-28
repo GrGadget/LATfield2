@@ -13,7 +13,7 @@ namespace LATfield2
    array_size,std::string  filename_str, std::string dataset_name_str)
    {
 
-	   hid_t file_id, plist_id,filespace,memspace,dset_id,dtype_id{},dtbase_id,root_id;
+	   hid_t file_id, plist_id,filespace,memspace,dset_id,dtype_id{},dtbase_id;
 	   hsize_t * components;
 
 	   char * filename;
@@ -188,7 +188,7 @@ namespace LATfield2
 
 			   file_id = H5Fopen(filename,H5F_ACC_RDWR,plist_id);
 			   H5Pclose(plist_id);
-			   root_id = H5Gopen(file_id,"/",H5P_DEFAULT);
+			   hid_t root_id = H5Gopen(file_id,"/",H5P_DEFAULT);
 			   dset_id = H5Dopen(root_id, dataset_name, H5P_DEFAULT);
 			   filespace = H5Dget_space(dset_id);
 			   dtype_id = H5Dget_type(dset_id);

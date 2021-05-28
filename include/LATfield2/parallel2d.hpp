@@ -510,7 +510,7 @@ template<class Type> void Parallel2d::sum(Type& number)
 template<class Type> void Parallel2d::sum(Type* array, int len)
 {
 	//Gather numbers at root
-	Type* gather;
+	Type* gather = nullptr;
 	if( rank() == root() ) gather = new Type[len*size()];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 			   gather, len*sizeof(Type), MPI_BYTE, this->root(), lat_world_comm_);
@@ -540,8 +540,8 @@ template<class Type> void Parallel2d::sum_dim0(Type& number)
 
 template<class Type> void Parallel2d::sum_dim0(Type* array, int len)
 {
-	int i,j,comm_rank;
-	Type* gather;
+	int i,j;
+	Type* gather  = nullptr;
 	if( grid_rank()[0] == 0 ) gather = new Type[len*grid_size_[0]];
 
   MPI_Gather( array, len*sizeof(Type), MPI_BYTE,gather, len*sizeof(Type), MPI_BYTE, 0,dim0_comm_[grid_rank_[1]]);
@@ -566,8 +566,8 @@ template<class Type> void Parallel2d::sum_dim1(Type& number)
 
 template<class Type> void Parallel2d::sum_dim1(Type* array, int len)
 {
-	int i,j,comm_rank;
-	Type* gather;
+	int i,j;
+	Type* gather = nullptr;
 	if( grid_rank_[1] == 0 ) gather = new Type[len*grid_size_[1]];
 
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,gather, len*sizeof(Type), MPI_BYTE, 0,dim1_comm_[grid_rank_[0]]);
@@ -595,7 +595,7 @@ void Parallel2d::sum_to(Type& number, int dest)
 template<class Type>
 void Parallel2d::sum_to(Type* array, int len, int dest)
 {
-	Type* gather;
+	Type* gather = nullptr;
 	if( rank() == dest ) gather = new Type[len*size()];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 			   gather, len*sizeof(Type), MPI_BYTE, dest, lat_world_comm_);
@@ -622,8 +622,8 @@ void Parallel2d::sum_dim0_to(Type& number, int dest)
 template<class Type>
 void Parallel2d::sum_dim0_to(Type* array, int len, int dest)
 {
-	int i,j,comm_rank;
-	Type* gather;
+	int i,j;
+	Type* gather = nullptr;
 	if( grid_rank_[0] == dest ) gather = new Type[len*grid_size_[0]];
 
   MPI_Gather(array, len*sizeof(Type), MPI_BYTE,gather,
@@ -649,8 +649,8 @@ void Parallel2d::sum_dim1_to(Type& number, int dest)
 template<class Type>
 void Parallel2d::sum_dim1_to(Type* array, int len, int dest)
 {
-	int i,j,comm_rank;
-	Type* gather;
+	int i,j;
+	Type* gather = nullptr;
 	if( grid_rank_[1] == dest ) gather = new Type[len*grid_size_[1]];
 
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,gather, len*sizeof(Type), MPI_BYTE, dest,dim1_comm_[grid_rank_[0]]);
@@ -675,7 +675,7 @@ template<class Type> void Parallel2d::max(Type& number)
 template<class Type> void Parallel2d::max(Type* array, int len)
 {
     //Gather numbers at root
-    Type* gather;
+    Type* gather = nullptr;
     if( rank() == root() ) gather = new Type[len*size()];
     MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
                gather, len*sizeof(Type), MPI_BYTE, this->root(), lat_world_comm_);
@@ -705,7 +705,7 @@ template<class Type> void Parallel2d::max_dim0(Type& number)
 template<class Type> void Parallel2d::max_dim0(Type* array, int len)
 {
     //Gather numbers at root
-    Type* gather;
+    Type* gather = nullptr;
     if( grid_rank_[0] == 0 ) gather = new Type[len*grid_size_[0]];
     MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
                gather, len*sizeof(Type), MPI_BYTE, 0,dim0_comm_[grid_rank_[1]]);
@@ -735,7 +735,7 @@ template<class Type> void Parallel2d::max_dim1(Type& number)
 template<class Type> void Parallel2d::max_dim1(Type* array, int len)
 {
     //Gather numbers at root
-    Type* gather;
+    Type* gather = nullptr;
     if( grid_rank_[1] == 0 ) gather = new Type[len*grid_size_[1]];
     MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
                gather, len*sizeof(Type), MPI_BYTE, 0,dim1_comm_[grid_rank_[0]]);
@@ -766,7 +766,7 @@ void Parallel2d::max_to(Type& number, int dest)
 template<class Type>
 void Parallel2d::max_to(Type* array, int len, int dest)
 {
-	Type* gather;
+	Type* gather = nullptr;
 	if( rank() == dest ) gather = new Type[len*size()];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 						 gather, len*sizeof(Type), MPI_BYTE, dest, lat_world_comm_);
@@ -793,7 +793,7 @@ template<class Type>
 void Parallel2d::max_dim0_to(Type* array, int len, int dest)
 {
 	//Gather numbers at root
-	Type* gather;
+	Type* gather = nullptr;
 	if( grid_rank_[0] == dest ) gather = new Type[len*grid_size_[0]];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 						 gather, len*sizeof(Type), MPI_BYTE, dest,dim0_comm_[grid_rank_[1]]);
@@ -821,7 +821,7 @@ template<class Type>
 void Parallel2d::max_dim1_to(Type* array, int len, int dest)
 {
 	//Gather numbers at root
-	Type* gather;
+	Type* gather = nullptr;
 	if( grid_rank_[1] == dest ) gather = new Type[len*grid_size_[1]];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 						 gather, len*sizeof(Type), MPI_BYTE, dest,dim1_comm_[grid_rank_[0]]);
@@ -848,7 +848,7 @@ template<class Type> void Parallel2d::min(Type& number)
 template<class Type> void Parallel2d::min(Type* array, int len)
 {
     //Gather numbers at root
-    Type* gather;
+    Type* gather = nullptr;
     if( rank() == root() ) gather = new Type[len*size()];
     MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
                gather, len*sizeof(Type), MPI_BYTE, this->root(), lat_world_comm_);
@@ -880,7 +880,7 @@ template<class Type> void Parallel2d::min_dim0(Type& number)
 template<class Type> void Parallel2d::min_dim0(Type* array, int len)
 {
     //Gather numbers at root
-    Type* gather;
+    Type* gather = nullptr;
     if( grid_rank_[0] == 0 ) gather = new Type[len*grid_size_[0]];
     MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
                gather, len*sizeof(Type), MPI_BYTE, 0,dim0_comm_[grid_rank_[1]]);
@@ -910,7 +910,7 @@ template<class Type> void Parallel2d::min_dim1(Type& number)
 template<class Type> void Parallel2d::min_dim1(Type* array, int len)
 {
     //Gather numbers at root
-    Type* gather;
+    Type* gather = nullptr;
     if( grid_rank_[1] == 0 ) gather = new Type[len*grid_size_[1]];
     MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
                gather, len*sizeof(Type), MPI_BYTE, 0,dim1_comm_[grid_rank_[0]]);
@@ -942,7 +942,7 @@ template<class Type>
 void Parallel2d::min_to(Type* array, int len, int dest)
 {
 	//Gather numbers at root
-	Type* gather;
+	Type* gather = nullptr;
 	if( rank() == dest ) gather = new Type[len*size()];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 						 gather, len*sizeof(Type), MPI_BYTE, dest, lat_world_comm_);
@@ -970,7 +970,7 @@ template<class Type>
 void Parallel2d::min_dim0_to(Type* array, int len, int dest)
 {
 	//Gather numbers at root
-	Type* gather;
+	Type* gather = nullptr;
 	if( grid_rank_[0] == dest ) gather = new Type[len*grid_size_[0]];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 						 gather, len*sizeof(Type), MPI_BYTE, dest,dim0_comm_[grid_rank_[1]]);
@@ -998,7 +998,7 @@ template<class Type>
 void Parallel2d::min_dim1_to(Type* array, int len, int dest)
 {
 	//Gather numbers at root
-	Type* gather;
+	Type* gather = nullptr;
 	if( grid_rank_[1] == dest ) gather = new Type[len*grid_size_[1]];
 	MPI_Gather( array, len*sizeof(Type), MPI_BYTE,
 						 gather, len*sizeof(Type), MPI_BYTE, dest,dim1_comm_[grid_rank_[0]]);

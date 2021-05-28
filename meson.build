@@ -15,7 +15,6 @@ pkg=import('pkgconfig')
 conf_data = configuration_data({ 
     'FFT3D' :get_option('FFT3D'),
     'HDF5' :get_option('HDF5'),
-    'H5_HAVE_PARALLEL' :get_option('H5_HAVE_PARALLEL'),
     'SINGLE' :get_option('SINGLE'),
     'EXTERNAL_IO' :get_option('EXTERNAL_IO')
     })

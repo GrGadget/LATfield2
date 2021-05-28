@@ -27,7 +27,7 @@ void Parallel2d::initialize(MPI_Comm com,int proc_size0, int proc_size1)
 }
 
 
-void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int IO_total_size, int IO_node_size)
+void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int, int)
 {
     #ifndef EXTERNAL_IO
     lat_world_comm_ = com;

@@ -3,7 +3,6 @@
 
 #mesondefine FFT3D
 #mesondefine HDF5
-#mesondefine H5_HAVE_PARALLEL
 
 #mesondefine SINGLE
 #mesondefine EXTERNAL_IO

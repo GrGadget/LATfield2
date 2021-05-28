@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 #include "LATfield2/macros.hpp"
 #include "LATfield2/Lattice.hpp"
@@ -1638,18 +1639,18 @@ void  Field<FieldType>::saveSliceHDF5(string filename, string dataset_name,int x
     Site X(*lattice_);
     Site sX;
 
-    int dim = this->lattice_->dim();
+    const int dim = this->lattice_->dim();
 
-    int sSize[dim];
-		int sSize_thin[dim];
-    int r[dim];
+    std::vector<int> sSize(dim);
+    std::vector<int> sSize_thin(dim);
+    std::vector<int> r(dim);
 
     if(thickness>1)
     {
 
         sSize[0]=thickness;
         for(int i=1;i<dim;i++)sSize[i]=this->lattice_->size(i);
-        slat.initialize(dim,sSize,0);
+        slat.initialize(dim,sSize.data(),0);
         sfield.initialize(slat,rows_,cols_,symmetry_);
         sfield.alloc();
 
@@ -1660,7 +1661,7 @@ void  Field<FieldType>::saveSliceHDF5(string filename, string dataset_name,int x
             for(int l=0;l<dim;l++)r[l]=sX.coord(l);
             r[0]+=xcoord;
 
-            X.setCoord(r);
+            X.setCoord(r.data());
 
             for(int i =0; i<components_;i++)sfield(sX,i)=this->operator()(X,i);
         }
@@ -1668,7 +1669,7 @@ void  Field<FieldType>::saveSliceHDF5(string filename, string dataset_name,int x
     else
     {
 			for(int i=0;i<dim-1;i++)sSize_thin[i]=this->lattice_->size(i+1);
-			slat.initialize(dim-1,sSize_thin,0);
+			slat.initialize(dim-1,sSize_thin.data(),0);
 			sfield.initialize(slat,rows_,cols_,symmetry_);
 			sfield.alloc();
 
@@ -1678,7 +1679,7 @@ void  Field<FieldType>::saveSliceHDF5(string filename, string dataset_name,int x
 			{
 					for(int l=1;l<dim;l++)r[l]=sX.coord(l-1);
 					r[0]=xcoord;
-					X.setCoord(r);
+					X.setCoord(r.data());
 					for(int i =0; i<components_;i++)sfield(sX,i)=this->operator()(X,i);
 			}
     }
@@ -1702,10 +1703,10 @@ void  Field<FieldType>::saveHDF5_coarseGrain3D(string filename, string dataset_n
     Lattice slat;
     Field<FieldType> sfield;
 
-    int dim =lattice_->dim();
+    const int dim =lattice_->dim();
     long localsize[dim];
 
-    int sSize[dim];
+    std::vector<int> sSize(dim);
     int slocalsize[dim];
 
     long blocksize = array_size_*components_;
@@ -1742,7 +1743,7 @@ void  Field<FieldType>::saveHDF5_coarseGrain3D(string filename, string dataset_n
             }
         }
     }
-    slat.initialize(dim,sSize,0);
+    slat.initialize(dim,sSize.data(),0);
     sfield.initialize(slat,rows_,cols_,symmetry_);
     sfield.alloc();
 
