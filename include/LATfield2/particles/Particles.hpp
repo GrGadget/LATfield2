@@ -115,6 +115,12 @@ struct  partList{
     std::list<part>  parts;
     std::list<part>  partsTemp;
     partList() : size(0), parts(), partsTemp(){}
+    void clear()
+    {
+        size = 0;
+        parts.clear();
+        partsTemp.clear();
+    }
 };
 #endif
 /**
@@ -152,6 +158,9 @@ public:
   Particles(){;};
     //! destructor.
   ~Particles();
+  
+  // removes all particles from the data structure
+  void clear();
 
     /*!
      Initialization.
@@ -492,6 +501,7 @@ void Particles<part,part_info,part_dataType>::getPartCoord(part pcl,int * coord)
 
 
 
+
 template <typename part, typename part_info, typename part_dataType>
 void Particles<part,part_info,part_dataType>::getPartCoordLocal(part pcl,int * coord)
 {
@@ -606,6 +616,16 @@ void Particles<part,part_info,part_dataType>::prepare_RK()
     }
   }
 
+}
+
+template <typename part, typename part_info, typename part_dataType>
+void Particles<part,part_info,part_dataType>::clear()
+{
+  Site  xPart(lat_part_);
+  for(xPart.first() ; xPart.test(); xPart.next())
+  { 
+    field_part_(xPart).clear();
+  }
 }
 
 template <typename part, typename part_info, typename part_dataType>
