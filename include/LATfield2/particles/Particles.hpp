@@ -171,7 +171,7 @@ public:
      */
   void initialize(part_info part_global_info,
 		  part_dataType part_datatype,
-		  Lattice * lat_part,
+		  const Lattice * lat_part,
 		  Real boxSize[3]);
 
     /*!
@@ -388,7 +388,7 @@ Particles<part,part_info,part_dataType>::~Particles()
 template <typename part, typename part_info, typename part_dataType>
 void Particles<part,part_info,part_dataType>::initialize(part_info part_global_info,
 							 part_dataType part_datatype,
-							 Lattice * lat_part,
+							 const Lattice * lat_part,
 							 Real  boxSize[3])
 {
 

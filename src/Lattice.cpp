@@ -314,7 +314,7 @@ void Lattice::initializeComplexFFT(const Lattice & lat_real, int halo)
 #endif
 
 
-void Lattice::save_arch(const string filename)
+void Lattice::save_arch(const string filename) const
 {
 	fstream file;
 	int p,i;

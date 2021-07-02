@@ -185,7 +185,7 @@ public:
      Function which save in serial and in ASCII the global and local description of the Lattice. Usefull to read a file writen by fast_save or fast_write methods of the Field class.
      \param filename : filename of the architectur file.
      */
-    void save_arch(const string filename);
+    void save_arch (const string filename) const;
     
     /*!
      \return return true if the description of the lattice has been written on disk.
@@ -231,7 +231,7 @@ private:
     
     
     //save variable for fast save
-    int arch_saved_;
+    mutable int arch_saved_;
     
 };
 

@@ -93,7 +93,7 @@ class Field
          \param lattice    : lattice on which the field is defined
          \param components : number of components. The default is 1.
          */
-		Field(Lattice& lattice, int components = 1);
+		Field(const Lattice& lattice, int components = 1);
 
         /*!
          Constructor of a "matrix" field with initialization and allocation.
@@ -104,7 +104,7 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric can be passed to specify the symmetry, reducing memory usage.
          */
-		Field(Lattice& lattice, int rows, int cols, int symmetry=unsymmetric);
+		Field(const Lattice& lattice, int rows, int cols, int symmetry=unsymmetric);
 
         /*!
          Constructor of a vector of "matrix" field with initialization and allocation.
@@ -116,7 +116,7 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric can be passed to specify the symmetry, reducing memory usage.
          */
-        Field(Lattice& lattice, int nMatrix, int rows, int cols, int symmetry);
+        Field(const Lattice& lattice, int nMatrix, int rows, int cols, int symmetry);
 
         //!Destructor.
 		~Field();
@@ -127,7 +127,7 @@ class Field
          \param lattice    : lattice on which the field is defined
          \param components : number of components. Default is 1.
          */
-		void initialize(Lattice& lattice, int components = 1);
+		void initialize(const Lattice& lattice, int components = 1);
 
         /*!
          Initialization of a "matrix" field. Without allocation.
@@ -136,7 +136,7 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric  can be pass to specify the symmetry.
          */
-		void initialize(Lattice& lattice, int rows, int cols, int symmetry=unsymmetric);
+		void initialize(const Lattice& lattice, int rows, int cols, int symmetry=unsymmetric);
 
         /*!
          Initialization of a vector of "matrix" field. Without allocation.
@@ -146,7 +146,7 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric  can be pass to specify the symmetry.
          */
-        void initialize(Lattice& lattice,int nMatrix ,int rows, int cols, int symmetry);
+        void initialize(const Lattice& lattice,int nMatrix ,int rows, int cols, int symmetry);
 
         /*!
          Memory allocation. Allocate the data_ array of this field. It allocated "components_*lattice_->sitesLocalGross()*sizeof(FieldType)" bytes. This method use malloc() to allocate the memory, in case the pointer is not allocated it will return a error message but not exiting the executable.
@@ -388,27 +388,27 @@ class Field
 	    /*!
          Returns a pointer to the lattice on which the field is defined.
 	    */
-		Lattice& lattice();
+		const Lattice& lattice() const;
         /*!
          Returns the number of components of the field at each sites.
          */
-		int   components();
+		int   components() const;
         /*!
          Returns the number of rows of the component matrix at each sites.
          */
-		int   rows();
+		int   rows() const;
         /*!
          Returns the number of columns of the component matrix at each sites.
          */
-		int   cols();
+		int   cols() const;
     /*!
      Returns the number of component matrix at each sites.
      */
-    int   nMatrix();
+    int   nMatrix() const;
         /*!
          returns the symmetry of the component matrix at each sites.
          */
-		int   symmetry();
+		int   symmetry() const;
 
         /*!
          Returns the pointer to the data_ array of the field.
@@ -430,7 +430,7 @@ class Field
 #endif
 	protected:
 		//MEMBER DATA
-		Lattice*   lattice_;
+		const Lattice*   lattice_;
 
 		int        components_;
 		int        rows_;
@@ -475,7 +475,7 @@ Field<FieldType>::Field() : data_memSize_(0), data_(NULL) {
 }
 
 template <class FieldType>
-Field<FieldType>::Field(Lattice& lattice, int components) : data_memSize_(0), data_(NULL)
+Field<FieldType>::Field(const Lattice& lattice, int components) : data_memSize_(0), data_(NULL)
 {
 	status_=0;
 	this->initialize(lattice, components);
@@ -487,7 +487,7 @@ Field<FieldType>::Field(Lattice& lattice, int components) : data_memSize_(0), da
 }
 
 template <class FieldType>
-Field<FieldType>::Field(Lattice& lattice, int rows, int cols, int symmetry) : data_memSize_(0), data_(NULL)
+Field<FieldType>::Field(const Lattice& lattice, int rows, int cols, int symmetry) : data_memSize_(0), data_(NULL)
 {
 	status_=0;
 	this->initialize(lattice, rows, cols, symmetry);
@@ -499,7 +499,7 @@ Field<FieldType>::Field(Lattice& lattice, int rows, int cols, int symmetry) : da
 }
 
 template <class FieldType>
-Field<FieldType>::Field(Lattice& lattice, int nMatrix, int rows, int cols, int symmetry) : data_memSize_(0), data_(NULL)
+Field<FieldType>::Field(const Lattice& lattice, int nMatrix, int rows, int cols, int symmetry) : data_memSize_(0), data_(NULL)
 {
     status_=0;
     this->initialize(lattice,nMatrix, rows, cols, symmetry);
@@ -653,7 +653,7 @@ Field<FieldType>::~Field()
 }
 
 template <class FieldType>
-void Field<FieldType>::initialize(Lattice& lattice, int components)
+void Field<FieldType>::initialize(const Lattice& lattice, int components)
 {
 	if(status_ & allocated) { this->dealloc(); }
 
@@ -671,7 +671,7 @@ void Field<FieldType>::initialize(Lattice& lattice, int components)
 }
 
 template <class FieldType>
-void Field<FieldType>::initialize(Lattice& lattice, int rows, int cols, int symmetry)
+void Field<FieldType>::initialize(const Lattice& lattice, int rows, int cols, int symmetry)
 {
 	int components;
 
@@ -692,7 +692,7 @@ void Field<FieldType>::initialize(Lattice& lattice, int rows, int cols, int symm
 
 }
 template <class FieldType>
-void Field<FieldType>::initialize(Lattice& lattice,int nMatrix, int rows, int cols, int symmetry)
+void Field<FieldType>::initialize(const Lattice& lattice,int nMatrix, int rows, int cols, int symmetry)
 {
     int components;
 
@@ -1942,22 +1942,22 @@ void Field<FieldType>:: saveHDF5_server_write(int number_of_message, string file
 //MISCELLANEOUS=================
 
 template <class FieldType>
-Lattice& Field<FieldType>::lattice() { return *lattice_; }
+const Lattice& Field<FieldType>::lattice()const { return *lattice_; }
 
 template <class FieldType>
-int Field<FieldType>::components() { return components_; }
+int Field<FieldType>::components() const { return components_; }
 
 template <class FieldType>
-int Field<FieldType>::rows() { return rows_; }
+int Field<FieldType>::rows() const { return rows_; }
 
 template <class FieldType>
-int Field<FieldType>::cols() { return cols_; }
+int Field<FieldType>::cols() const { return cols_; }
 
 template <class FieldType>
-int Field<FieldType>::nMatrix() { return nMatrix_; }
+int Field<FieldType>::nMatrix() const { return nMatrix_; }
 
 template <class FieldType>
-int Field<FieldType>::symmetry() { return symmetry_; }
+int Field<FieldType>::symmetry() const { return symmetry_; }
 
 template <class FieldType>
 FieldType*& Field<FieldType>::data() { return data_; }
