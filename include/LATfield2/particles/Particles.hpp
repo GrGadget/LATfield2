@@ -209,7 +209,7 @@ public:
   void prepare_RK();
     
     template<class Functor>
-    Real updateVel(Functor updateF);
+    void for_each(Functor updateF);
 
 
     template<typename mappingClass>
@@ -630,33 +630,21 @@ void Particles<part,part_info,part_dataType>::clear()
 
 template <typename part, typename part_info, typename part_dataType>
 template<class Functor>
-Real Particles<part,part_info,part_dataType>::updateVel(Functor updateF)
+void Particles<part,part_info,part_dataType>::for_each(Functor updateF)
 {
   Site  xPart(lat_part_);
-  //Site  xphi;
-  //xphi.initialize(phi.lattice());
-  //xphi.first();
-
   typename std::list<part>::iterator it;
-  Real maxvel = 0.;
-  
   for(xPart.first() ; xPart.test(); xPart.next())
   {
       if(field_part_(xPart).size!=0)
       {
           for (it=(field_part_)(xPart).parts.begin(); it != (field_part_)(xPart).parts.end(); ++it)
           {
-              Real v2 = updateF(
-                         *it, // reference to particle
-                         xPart); // site
-              
-              maxvel = std::max(maxvel,v2);
+              updateF(*it, // reference to particle
+                      xPart); // site
           }
       }
-      //xphi.next();
   }
-
-  return std::sqrt(maxvel);
 }
 
 
