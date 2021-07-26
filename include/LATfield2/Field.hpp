@@ -23,6 +23,11 @@
 
 namespace LATfield2
 {
+
+enum class matrix_symmetry {
+    symmetric, unsymmetric
+};
+
 using std::endl;
 using std::cerr;
 using std::cout;
@@ -46,9 +51,6 @@ inline int gcs(int i,int j)
   return component;
 }
 
-
-extern  int symmetric;
-extern  int unsymmetric;
 
 //PROTO-TYPEs============================================
 template<class FieldType>
@@ -104,7 +106,8 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric can be passed to specify the symmetry, reducing memory usage.
          */
-		Field(const Lattice& lattice, int rows, int cols, int symmetry=unsymmetric);
+		Field(const Lattice& lattice, int rows, int cols,
+            matrix_symmetry sym = matrix_symmetry::unsymmetric);
 
         /*!
          Constructor of a vector of "matrix" field with initialization and allocation.
@@ -116,7 +119,7 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric can be passed to specify the symmetry, reducing memory usage.
          */
-        Field(const Lattice& lattice, int nMatrix, int rows, int cols, int symmetry);
+        Field(const Lattice& lattice, int nMatrix, int rows, int cols, matrix_symmetry);
 
         //!Destructor.
 		~Field();
@@ -136,7 +139,8 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric  can be pass to specify the symmetry.
          */
-		void initialize(const Lattice& lattice, int rows, int cols, int symmetry=unsymmetric);
+		void initialize(const Lattice& lattice, int rows, int cols,
+            matrix_symmetry sym=matrix_symmetry::unsymmetric);
 
         /*!
          Initialization of a vector of "matrix" field. Without allocation.
@@ -146,7 +150,8 @@ class Field
          \param matrixCols : matrix number of colomn.
          \param symmetry   : symmetry of the matrix, default is unsymmetric. LATfield2d::symmetric  can be pass to specify the symmetry.
          */
-        void initialize(const Lattice& lattice,int nMatrix ,int rows, int cols, int symmetry);
+        void initialize(const Lattice& lattice,int nMatrix ,int rows, int cols,
+            matrix_symmetry);
 
         /*!
          Memory allocation. Allocate the data_ array of this field. It allocated "components_*lattice_->sitesLocalGross()*sizeof(FieldType)" bytes. This method use malloc() to allocate the memory, in case the pointer is not allocated it will return a error message but not exiting the executable.
@@ -408,7 +413,10 @@ class Field
         /*!
          returns the symmetry of the component matrix at each sites.
          */
-		int   symmetry() const;
+        matrix_symmetry   symmetry() const
+        {
+            return symmetry_;
+        }
 
         /*!
          Returns the pointer to the data_ array of the field.
@@ -437,7 +445,7 @@ class Field
 		int        cols_;
     int        nMatrix_;
     int        matrixSize_;
-		int        symmetry_;
+    matrix_symmetry symmetry_;
 		unsigned int sizeof_fieldType_;
 
 		int        status_;
@@ -487,10 +495,11 @@ Field<FieldType>::Field(const Lattice& lattice, int components) : data_memSize_(
 }
 
 template <class FieldType>
-Field<FieldType>::Field(const Lattice& lattice, int rows, int cols, int symmetry) : data_memSize_(0), data_(NULL)
+Field<FieldType>::Field(const Lattice& lattice, int rows, int cols,
+    matrix_symmetry sym) : data_memSize_(0), data_(NULL)
 {
 	status_=0;
-	this->initialize(lattice, rows, cols, symmetry);
+	this->initialize(lattice, rows, cols, sym);
 	this->alloc();
 #ifdef HDF5
     this->get_h5type();
@@ -499,10 +508,11 @@ Field<FieldType>::Field(const Lattice& lattice, int rows, int cols, int symmetry
 }
 
 template <class FieldType>
-Field<FieldType>::Field(const Lattice& lattice, int nMatrix, int rows, int cols, int symmetry) : data_memSize_(0), data_(NULL)
+Field<FieldType>::Field(const Lattice& lattice, int nMatrix, int rows, int cols,
+    matrix_symmetry sym) : data_memSize_(0), data_(NULL)
 {
     status_=0;
-    this->initialize(lattice,nMatrix, rows, cols, symmetry);
+    this->initialize(lattice,nMatrix, rows, cols, sym);
     this->alloc();
 #ifdef HDF5
     this->get_h5type();
@@ -664,14 +674,15 @@ void Field<FieldType>::initialize(const Lattice& lattice, int components)
 	rows_=components_;
 	cols_=1;
     nMatrix_ = 1;
-	symmetry_=unsymmetric;
+    symmetry_= matrix_symmetry::unsymmetric;
     matrixSize_ = components;
 
 
 }
 
 template <class FieldType>
-void Field<FieldType>::initialize(const Lattice& lattice, int rows, int cols, int symmetry)
+void Field<FieldType>::initialize(const Lattice& lattice, int rows, int cols,
+    matrix_symmetry sym)
 {
 	int components;
 
@@ -683,16 +694,17 @@ void Field<FieldType>::initialize(const Lattice& lattice, int rows, int cols, in
 	rows_=rows;
 	cols_=cols;
     nMatrix_ =1;
-	symmetry_=symmetry;
-	if(symmetry_==symmetric) { components = ( rows_ * (rows_+1) ) / 2; }
-	else { components = rows*cols; }
-	components_=components;
+    symmetry_=sym;
+    if(symmetry_== matrix_symmetry::symmetric) { components = ( rows_ * (rows_+1) ) / 2; }
+    else { components = rows*cols; }
+    components_=components;
     matrixSize_ = components;
 
 
 }
 template <class FieldType>
-void Field<FieldType>::initialize(const Lattice& lattice,int nMatrix, int rows, int cols, int symmetry)
+void Field<FieldType>::initialize(const Lattice& lattice,int nMatrix, int rows,
+    int cols, matrix_symmetry sym)
 {
     int components;
 
@@ -704,13 +716,11 @@ void Field<FieldType>::initialize(const Lattice& lattice,int nMatrix, int rows, 
     rows_=rows;
     cols_=cols;
     nMatrix_ = nMatrix;
-    symmetry_=symmetry;
-    if(symmetry_==symmetric) { components = ( rows_ * (rows_+1) ) / 2; }
+    symmetry_=sym;
+    if(symmetry_==matrix_symmetry::symmetric) { components = ( rows_ * (rows_+1) ) / 2; }
     else { components = rows*cols; }
     matrixSize_ = components;
     components_=components * nMatrix;
-
-
 }
 
 template <class FieldType>
@@ -802,14 +812,14 @@ inline FieldType& Field<FieldType>::operator()(long index, int component)
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(long index, int i, int j)
 {
-	int component;
-	if(symmetry_==symmetric)
+    int component;
+    if(symmetry()==matrix_symmetry::symmetric)
     {
-		if (i>j) component = i + j * rows_ - (j * (1 + j)) / 2;
-		else component = j + i * rows_ - (i * (1 + i)) / 2;
+        if (i>j) component = i + j * rows_ - (j * (1 + j)) / 2;
+        else component = j + i * rows_ - (i * (1 + i)) / 2;
     }
-	else { component = j*rows_ + i; }
-	return data_[index*components_ + component];
+    else { component = j*rows_ + i; }
+    return data_[index*components_ + component];
 }
 
 
@@ -817,7 +827,7 @@ template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(long index, int k, int i, int j)
 {
     int component;
-    if(symmetry_==symmetric)
+    if(symmetry()==matrix_symmetry::symmetric)
     {
         if (i>j) component = i + j * rows_ - (j * (1 + j)) / 2;
         else component = j + i * rows_ - (i * (1 + i)) / 2;
@@ -1651,7 +1661,7 @@ void  Field<FieldType>::saveSliceHDF5(string filename, string dataset_name,int x
         sSize[0]=thickness;
         for(int i=1;i<dim;i++)sSize[i]=this->lattice_->size(i);
         slat.initialize(dim,sSize.data(),0);
-        sfield.initialize(slat,rows_,cols_,symmetry_);
+        sfield.initialize(slat,rows_,cols_,symmetry());
         sfield.alloc();
 
         sX.initialize(slat);
@@ -1670,7 +1680,7 @@ void  Field<FieldType>::saveSliceHDF5(string filename, string dataset_name,int x
     {
 			for(int i=0;i<dim-1;i++)sSize_thin[i]=this->lattice_->size(i+1);
 			slat.initialize(dim-1,sSize_thin.data(),0);
-			sfield.initialize(slat,rows_,cols_,symmetry_);
+			sfield.initialize(slat,rows_,cols_,symmetry());
 			sfield.alloc();
 
 			sX.initialize(slat);
@@ -1744,7 +1754,7 @@ void  Field<FieldType>::saveHDF5_coarseGrain3D(string filename, string dataset_n
         }
     }
     slat.initialize(dim,sSize.data(),0);
-    sfield.initialize(slat,rows_,cols_,symmetry_);
+    sfield.initialize(slat,rows_,cols_,symmetry());
     sfield.alloc();
 
 
@@ -1955,9 +1965,6 @@ int Field<FieldType>::cols() const { return cols_; }
 
 template <class FieldType>
 int Field<FieldType>::nMatrix() const { return nMatrix_; }
-
-template <class FieldType>
-int Field<FieldType>::symmetry() const { return symmetry_; }
 
 template <class FieldType>
 FieldType*& Field<FieldType>::data() { return data_; }

@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         
         Field<Real> phi(lat,1);
         Field<Real> B(lat,3);
-        Field<Real> Tij(lat,3,3,LATfield2::symmetric);
+        Field<Real> Tij(lat,3,3,LATfield2::matrix_symmetry::symmetric);
         
         Real boxSize[3];
         for(int i=0;i<3;i++)boxSize[i] = latresolution * lat_part.size(i);
