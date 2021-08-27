@@ -225,7 +225,8 @@ class Field
 
          \sa To have more description see the Site class documentation.
          */
-		FieldType& operator()(const Site& site, int component);
+		FieldType& operator()(const Site& site, int component) ;
+		const FieldType& operator()(const Site& site, int component) const ;
 
         /*!
          Returns the value of the (i,j) matrix component of the field at the position pointed by the Site object (data_[j*rows_ + i + site.index*components_]). In the symmetric case, it returns data_[abs(i-j) + min(i,j)*(rows_+0.5-0.5*min(i,j)) + site.index()*components_].
@@ -805,6 +806,11 @@ inline const FieldType& Field<FieldType>::operator()(long index)const
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(long index, int component)
+{
+	return data_[index*components_ + component];
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(long index, int component) const
 {
 	return data_[index*components_ + component];
 }
