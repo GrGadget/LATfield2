@@ -1,6 +1,5 @@
 sources = files(
     'parallel2d.cpp',
-    'Field.cpp',
     'Lattice.cpp',
     'Site.cpp',
     'PlanFFT.cpp',
