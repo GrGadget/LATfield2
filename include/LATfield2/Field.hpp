@@ -180,8 +180,8 @@ class Field
 
          \param index: displacment on the data_ array.
          */
-		FieldType& operator()(long index);
-		const FieldType& operator()(long index)const;
+        FieldType& operator()(long index);
+        const FieldType& operator()(long index)const;
 
         /*!
          Returns the value of the field stored in data_[component + index*components_]. User should used operator()(const Site& site, int component) to refer and access to the value of the field.
@@ -189,7 +189,8 @@ class Field
          \param index    : number of site to skip.
          \param component: index of the desired component.
          */
-		FieldType& operator()(long index, int component);
+        FieldType& operator()(long index, int component);
+        const FieldType& operator()(long index, int component)const;
 
         /*!
          Returns the value of the field stored in data_[j*rows_ + i + index*components_]. In the symmetric case, it returns data_[abs(i-j) + min(i,j)*(rows_+0.5-0.5*min(i,j)) + index*components_]. User should used operator()(const Site& site, int i, int j) to refer and access to the value of the field.
@@ -198,12 +199,14 @@ class Field
          \param i     : index of the row
          \param j     : index of the column
          */
-		FieldType& operator()(long index, int i, int j);
+        FieldType& operator()(long index, int i, int j);
+        const FieldType& operator()(long index, int i, int j)const;
 
 
 
 
         FieldType& operator()(long index, int k, int i, int j);
+        const FieldType& operator()(long index, int k, int i, int j)const;
 
 
         /*!
@@ -213,8 +216,8 @@ class Field
 
          \sa To have more description see the Site class documentation.
          */
-		FieldType& operator()(const Site& site);
-		const FieldType& operator()(const Site& site)const;
+        FieldType& operator()(const Site& site);
+        const FieldType& operator()(const Site& site)const;
 
         /*!
          Returns the value of a (vector) field's component at the position pointed by the Site object (data_[component + site.index()*components_]).
@@ -225,7 +228,8 @@ class Field
 
          \sa To have more description see the Site class documentation.
          */
-		FieldType& operator()(const Site& site, int component);
+        FieldType& operator()(const Site& site, int component) ;
+        const FieldType& operator()(const Site& site, int component) const ;
 
         /*!
          Returns the value of the (i,j) matrix component of the field at the position pointed by the Site object (data_[j*rows_ + i + site.index*components_]). In the symmetric case, it returns data_[abs(i-j) + min(i,j)*(rows_+0.5-0.5*min(i,j)) + site.index()*components_].
@@ -236,45 +240,55 @@ class Field
 
          \sa To have more description see the Site class documentation.
          */
-		FieldType& operator()(const Site& site, int i, int j);
+        FieldType& operator()(const Site& site, int i, int j);
+        const FieldType& operator()(const Site& site, int i, int j)const;
 
         FieldType& operator()(const Site& site, int k, int i, int j);
+        const FieldType& operator()(const Site& site, int k, int i, int j)const;
 
 #ifdef FFT3D
         /*!
          Equivalent to FieldType& operator()(const Site& site) for cKsite
          */
-		FieldType& operator()(const cKSite& site);
+        FieldType& operator()(const cKSite& site);
+        const FieldType& operator()(const cKSite& site)const;
 
         /*!
          Equivalent to FieldType& operator()(const Site& site, int component) for cKsite
          */
-		FieldType& operator()(const cKSite& site, int component);
+        FieldType& operator()(const cKSite& site, int component);
+        const FieldType& operator()(const cKSite& site, int component)const;
 
         /*!
          Equivalent to FieldType& operator()(const Site& site, int i, int j) for cKsite
          */
-		FieldType& operator()(const cKSite& site, int i, int j);
+        FieldType& operator()(const cKSite& site, int i, int j);
+        const FieldType& operator()(const cKSite& site, int i, int j)const;
 
         FieldType& operator()(const cKSite& site,int k, int i, int j);
+        const FieldType& operator()(const cKSite& site,int k, int i, int j)const;
 
         /*!
          Equivalent to FieldType& operator()(const Site& site) for rKsite
          */
-		FieldType& operator()(const rKSite& site);
+        FieldType& operator()(const rKSite& site);
+        const FieldType& operator()(const rKSite& site)const;
 
         /*!
          Equivalent to FieldType& operator()(const Site& site, int component) for rKsite
          */
 
-		FieldType& operator()(const rKSite& site, int component);
+        FieldType& operator()(const rKSite& site, int component);
+        const FieldType& operator()(const rKSite& site, int component)const;
 
         /*!
          Equivalent to FieldType& operator()(const Site& site, int i, int j) for rKsite
          */
-		FieldType& operator()(const rKSite& site, int i, int j);
+        FieldType& operator()(const rKSite& site, int i, int j);
+        const FieldType& operator()(const rKSite& site, int i, int j)const;
 
         FieldType& operator()(const rKSite& site,int k, int i, int j);
+        const FieldType& operator()(const rKSite& site,int k, int i, int j)const;
 #endif
 		//BOUNDARY UPDATE
 
@@ -795,22 +809,39 @@ void Field<FieldType>::dealloc()
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(long index)
 {
-	return data_[index];
+    return data_[index];
 }
 template <class FieldType>
 inline const FieldType& Field<FieldType>::operator()(long index)const
 {
-	return data_[index];
+    return data_[index];
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(long index, int component)
 {
-	return data_[index*components_ + component];
+    return data_[index*components_ + component];
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(long index, int component) const
+{
+    return data_[index*components_ + component];
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(long index, int i, int j)
+{
+    int component;
+    if(symmetry()==matrix_symmetry::symmetric)
+    {
+        if (i>j) component = i + j * rows_ - (j * (1 + j)) / 2;
+        else component = j + i * rows_ - (i * (1 + i)) / 2;
+    }
+    else { component = j*rows_ + i; }
+    return data_[index*components_ + component];
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(long index, int i, int j)const
 {
     int component;
     if(symmetry()==matrix_symmetry::symmetric)
@@ -836,32 +867,60 @@ inline FieldType& Field<FieldType>::operator()(long index, int k, int i, int j)
     component += matrixSize_ * k;
     return data_[index*components_ + component];
 }
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(long index, int k, int i,int j)const
+{
+    int component;
+    if(symmetry()==matrix_symmetry::symmetric)
+    {
+        if (i>j) component = i + j * rows_ - (j * (1 + j)) / 2;
+        else component = j + i * rows_ - (i * (1 + i)) / 2;
+    }
+    else { component = j*rows_ + i; }
+    component += matrixSize_ * k;
+    return data_[index*components_ + component];
+}
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const Site& site)
 {
-	return this->operator()(site.index());
+    return this->operator()(site.index());
 }
 template <class FieldType>
 inline const FieldType& Field<FieldType>::operator()(const Site& site)const
 {
-	return this->operator()(site.index());
+    return this->operator()(site.index());
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const Site& site, int component)
 {
-	return this->operator()(site.index(),component);
+    return this->operator()(site.index(),component);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const Site& site, int component)const
+{
+    return this->operator()(site.index(),component);
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const Site& site, int i, int j)
 {
-	return this->operator()(site.index(),i,j);
+    return this->operator()(site.index(),i,j);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const Site& site, int i,int j)const
+{
+    return this->operator()(site.index(),i,j);
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const Site& site,int k, int i, int j)
+{
+    return this->operator()(site.index(),k,i,j);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const Site& site,int k, int i, int j)const
 {
     return this->operator()(site.index(),k,i,j);
 }
@@ -870,19 +929,34 @@ inline FieldType& Field<FieldType>::operator()(const Site& site,int k, int i, in
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const cKSite& site)
 {
-	return this->operator()(site.index());
+    return this->operator()(site.index());
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const cKSite& site)const
+{
+    return this->operator()(site.index());
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const cKSite& site, int component)
 {
-	return this->operator()(site.index(),component);
+    return this->operator()(site.index(),component);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const cKSite& site, int component)const
+{
+    return this->operator()(site.index(),component);
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const cKSite& site, int i, int j)
 {
-	return this->operator()(site.index(),i,j);
+    return this->operator()(site.index(),i,j);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const cKSite& site, int i, int j)const
+{
+    return this->operator()(site.index(),i,j);
 }
 
 template <class FieldType>
@@ -890,27 +964,52 @@ inline FieldType& Field<FieldType>::operator()(const cKSite& site, int k, int i,
 {
     return this->operator()(site.index(),k,i,j);
 }
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const cKSite& site, int k,int i, int j)const
+{
+    return this->operator()(site.index(),k,i,j);
+}
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const rKSite& site)
 {
-	return this->operator()(site.index());
+    return this->operator()(site.index());
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const rKSite& site)const
+{
+    return this->operator()(site.index());
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const rKSite& site, int component)
 {
-	return this->operator()(site.index(),component);
+    return this->operator()(site.index(),component);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const rKSite& site, int component)const
+{
+    return this->operator()(site.index(),component);
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const rKSite& site, int i, int j)
 {
-	return this->operator()(site.index(),i,j);
+    return this->operator()(site.index(),i,j);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const rKSite& site, int i,int j)const
+{
+    return this->operator()(site.index(),i,j);
 }
 
 template <class FieldType>
 inline FieldType& Field<FieldType>::operator()(const rKSite& site, int k, int i, int j)
+{
+    return this->operator()(site.index(),k,i,j);
+}
+template <class FieldType>
+inline const FieldType& Field<FieldType>::operator()(const rKSite& site, int k,int i, int j)const 
 {
     return this->operator()(site.index(),k,i,j);
 }
