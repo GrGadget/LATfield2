@@ -210,6 +210,9 @@ public:
     
     template<class Functor>
     void for_each(Functor updateF);
+    
+    template<class Functor>
+    void for_each(Functor updateF) const;
 
 
     template<typename mappingClass>
@@ -634,6 +637,25 @@ void Particles<part,part_info,part_dataType>::for_each(Functor updateF)
 {
   Site  xPart(lat_part_);
   typename std::list<part>::iterator it;
+  for(xPart.first() ; xPart.test(); xPart.next())
+  {
+      if(field_part_(xPart).size!=0)
+      {
+          for (it=(field_part_)(xPart).parts.begin(); it != (field_part_)(xPart).parts.end(); ++it)
+          {
+              updateF(*it, // reference to particle
+                      xPart); // site
+          }
+      }
+  }
+}
+
+template <typename part, typename part_info, typename part_dataType>
+template<class Functor>
+void Particles<part,part_info,part_dataType>::for_each(Functor updateF)const
+{
+  Site  xPart(lat_part_);
+  typename std::list<part>::const_iterator it;
   for(xPart.first() ; xPart.test(); xPart.next())
   {
       if(field_part_(xPart).size!=0)
