@@ -53,6 +53,8 @@ class Imag
 #endif
 
  public:
+  using value_type = Real;
+  
   //CONSTRUCTORS
   Imag() {;};
   Imag(Real a,Real b) { data[0]=a; data[1]=b; };
