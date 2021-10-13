@@ -13,6 +13,7 @@
 
 #include "LATfield2/macros.hpp"
 #include <string>
+#include <vector>
 
 namespace LATfield2
 {
@@ -32,8 +33,8 @@ public:
     
     Lattice(const Lattice& lat, int halo, FFT fft_type);
     
-    Lattice(const Lattice&) = delete;
-    Lattice& operator=(const Lattice&) = delete;
+    // Lattice(const Lattice&) = delete;
+    // Lattice& operator=(const Lattice&) = delete;
     
     /*!
      Constructor with initialization
@@ -106,7 +107,7 @@ public:
     /*!
      \return int*. Pointer to the array of the size of each dimension of the lattice.
      */
-    const int* size() const{ return size_; }
+    const int* size() const{ return size_.data(); }
     
     /*!
      Function which returns the size of a given dimension of the lattice.
@@ -118,7 +119,7 @@ public:
     /*!
      \return int*. Pointer to the array of the size of each dimension of the sublattice stored in this MPI process.
      */
-    const int * sizeLocal()const { return sizeLocal_; }
+    const int * sizeLocal()const { return sizeLocal_.data(); }
     
     /*!
      Function which returns the size of a given dimension of the sublattice stored in this MPI process.
@@ -198,8 +199,8 @@ public:
     int getRankDim0(int coord) ;
     int getRankDim1(int coord) ;
     
-    const int * sizeLocalAllProcDim0()const{ return sizeLocalAllProcDim0_; }
-    const int * sizeLocalAllProcDim1()const{ return sizeLocalAllProcDim1_; }
+    const int * sizeLocalAllProcDim0()const{ return sizeLocalAllProcDim0_.data(); }
+    const int * sizeLocalAllProcDim1()const{ return sizeLocalAllProcDim1_.data(); }
     
     
 private:
@@ -208,18 +209,18 @@ private:
     
     //Global variables==============
     int  dim_;              //ok//Number of dimensions
-    int* size_;             //ok//Number of lattice sites in each direction
+    std::vector<int> size_; //ok//Number of lattice sites in each direction
     long  sites_;            //ok//Number of sites in lattice
     long  sitesGross_;       //ok//Number of sites in lattice plus halos
     int  halo_;             //ok//Number of sites extra in each direction
     
     //Local variables===============
-    int* sizeLocal_;       //ok//Number of local lattice sites in each direction
-    int* sizeLocalAllProcDim0_;
-    int* sizeLocalAllProcDim1_;
+    std::vector<int> sizeLocal_;       //ok//Number of local lattice sites in each direction
+    std::vector<int> sizeLocalAllProcDim0_;
+    std::vector<int> sizeLocalAllProcDim1_;
     long  sitesLocal_;      //ok//Number of local sites in lattice
     long  sitesLocalGross_; //ok//Number of local sites in lattice plus halo
-    long* jump_;            //ok//Jumps needed to move up one in each direction
+    std::vector<long> jump_;            //ok//Jumps needed to move up one in each direction
     
     
     long  siteFirst_;       //ok//Index of first local site in lattice

@@ -68,11 +68,7 @@ Lattice::~Lattice()
 { 
 	if((status_ & initialized) > 0)
     {
-		delete[] size_;
-		delete[] sizeLocal_;
-		delete[] jump_;
-        delete[] sizeLocalAllProcDim0_;
-        delete[] sizeLocalAllProcDim1_;
+        ;
     }
 }
 //INITIALIZE=========================
@@ -90,29 +86,25 @@ void Lattice::initialize(int dim, const int* size, int halo)
 	
 	if((status_ & initialized) > 0)
     {
-		delete[] size_;
-		delete[] sizeLocal_;
-		delete[] jump_;
-        delete[] sizeLocalAllProcDim0_;
-        delete[] sizeLocalAllProcDim1_;
+        ;
     }
 	//Store input lattice properties
 	dim_ =dim;
-	size_=new int[dim_];
+	size_.resize(dim_);
 	for(i=0;i<dim_;i++) size_[i]=size[i];
 	halo_=halo;
 	
 	
 	//Calculate local size
-	sizeLocal_=new int[dim_];
+	sizeLocal_.resize(dim_);
 	sizeLocal_[dim_-1]=int(std::ceil( (parallel.grid_size()[0]-parallel.grid_rank()[0])*size_[dim_-1]/float(parallel.grid_size()[0]) ));
 	sizeLocal_[dim_-1]-=int(std::ceil((parallel.grid_size()[0]-parallel.grid_rank()[0]-1)*size_[dim_-1]/float(parallel.grid_size()[0]) ));
 	sizeLocal_[dim_-2]=int(std::ceil( (parallel.grid_size()[1]-parallel.grid_rank()[1])*size_[dim_-2]/float(parallel.grid_size()[1]) ));
 	sizeLocal_[dim_-2]-=int(std::ceil((parallel.grid_size()[1]-parallel.grid_rank()[1]-1)*size_[dim_-2]/float(parallel.grid_size()[1]) ));
 	for(i=0;i<dim_-2;i++) sizeLocal_[i]=size_[i];
     
-    sizeLocalAllProcDim0_ = new int[parallel.grid_size()[0]];
-	sizeLocalAllProcDim1_ = new int[parallel.grid_size()[1]];
+    sizeLocalAllProcDim0_.resize(parallel.grid_size()[0]);
+	sizeLocalAllProcDim1_.resize(parallel.grid_size()[1]);
     
 	for(i=0;i<parallel.grid_size()[0];i++)
     {
@@ -126,7 +118,7 @@ void Lattice::initialize(int dim, const int* size, int halo)
     }
 	
 	//Calculate index jumps
-	jump_=new long[dim_];
+	jump_.resize(dim_);
 	jump_[0]=1;
 	for(i=1;i<dim_;i++) jump_[i]=jump_[i-1]*(sizeLocal_[i-1]+2*halo_);
 	
