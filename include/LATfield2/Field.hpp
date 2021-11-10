@@ -370,8 +370,8 @@ class Field
          \param filename : path to the file, from the executable folder.
          */
 
-	    void saveHDF5(string filename, string dataset_name);
-	    void saveHDF5(string filename){this->saveHDF5(filename, "data");}
+	    void saveHDF5(string filename, string dataset_name) const ;
+	    void saveHDF5(string filename) const {this->saveHDF5(filename, "data");}
 
 	    /*!
          Method to load a field with HDF5. To be able to use this method the flag HDF5 need to be set at compilation (-DHDF5). This method use serial HDF5 by default. For parallel HDF5 the flag -DH5_HAVE_PARALLEL must be set at compilation.
@@ -1729,11 +1729,10 @@ void Field<FieldType>::load(const string filename,
 }
 
 template <class FieldType>
-void  Field<FieldType>::saveHDF5(string filename, string dataset_name)
+void  Field<FieldType>::saveHDF5(string filename, string dataset_name)const
 {
 #ifdef HDF5
-
-	save_hdf5(data_,type_id_,array_size_,lattice_->coordSkip(),lattice_->size(),lattice_->sizeLocal(),lattice_->halo(),lattice_->dim(),components_,filename,dataset_name);
+    save_hdf5(data_,type_id_,array_size_,lattice_->coordSkip(),lattice_->size(),lattice_->sizeLocal(),lattice_->halo(),lattice_->dim(),components_,filename,dataset_name);
 #else
     COUT<<"LATfield2d must be compiled with HDF5 (flag HDF5 turn on!)"<<endl;
     COUT<<"to be able to use hdf5 data format!!!)"<<endl;
