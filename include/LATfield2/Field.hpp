@@ -85,6 +85,25 @@ class Field
 	{
 	public:
 
+    template<class Functor>
+    void for_each(Functor F)
+    {
+      Site  x(lattice_);
+      for(x.first() ; x.test(); x.next())
+      {
+        F(x);
+      }
+    }
+    template<class Functor>
+    void for_each(Functor F) const
+    {
+      Site  x(lattice_);
+      for(x.first() ; x.test(); x.next())
+      {
+        F(x);
+      }
+    }
+
         //! Constructor.
 		Field();
 
