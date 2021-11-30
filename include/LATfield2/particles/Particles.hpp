@@ -1,6 +1,7 @@
 #ifndef LATFIELD2_PARTICLES_HPP
 #define LATFIELD2_PARTICLES_HPP
 
+#include <boost/mpi/collectives.hpp>
 #include "LATfield2/macros.hpp"
 #include "LATfield2/int2string.hpp"
 #include <list>
@@ -269,6 +270,10 @@ public:
                        double * output=NULL,
                        int * reduce_type=NULL,
                        int noutput=0);
+    
+    // updates the domain decomposition due particle's drift. It moves particles
+    // across processes
+    void moveParticles();
 
 #ifdef HDF5
     /*!
@@ -955,6 +960,51 @@ Real Particles<part,part_info,part_dataType>::updateVel(Real (*updateVel_funct)(
     return sqrt(maxvel);
 
 
+}
+template <typename part, typename part_info, typename part_dataType>
+void Particles<part,part_info,part_dataType>::moveParticles()
+{
+    // send to correct process based on position
+    std::vector< std::vector<part> > P_sendrecv(parallel.size());
+    Site xPart(lat_part_);
+    
+    for(xPart.first() ; xPart.test(); xPart.next())
+    {
+        auto & part_list  = field_part_(xPart).parts;
+        for (auto it=part_list.begin(); it != part_list.end();)
+        {
+            // periodic boundary conditions:
+            for(int i=0;i<3;++i)
+            {
+                it->pos[i] = std::fmod(it->pos[i],boxSize_[i]);
+            }
+            
+            // determine the process
+            int proc_rank[2];
+            getPartProcess( *it, proc_rank) ;
+            const int destination = parallel.grid2world(proc_rank[0],proc_rank[1]);
+            
+            if(destination!=parallel.rank())
+            {
+                P_sendrecv[destination].emplace_back(*it);
+                it = part_list.erase(it);     
+            }else
+            {
+                ++it;
+            }
+        }
+    }
+    ::boost::mpi::all_to_all(parallel.my_comm,P_sendrecv,P_sendrecv);
+
+    for(auto i=0U;i<P_sendrecv.size();++i)
+    {
+        auto & v = P_sendrecv[i];
+        for(const auto & p : v)
+        {
+            addParticle_global(p);
+        }
+        v.clear();
+    }
 }
 
 template <typename part, typename part_info, typename part_dataType>

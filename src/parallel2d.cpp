@@ -215,7 +215,14 @@ void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int, in
 	if(root_ == lat_world_rank_)isRoot_=true;
     else isRoot_=false;
 
-
+    // we need to construct a communicator on-the-fly and then split it into
+    // itself in a sort of communicator factory, because LATfield2::parallel is
+    // global with a default constructor and we cannot define my_comm at
+    // construction.
+    my_comm =
+    ::boost::mpi::communicator(
+        lat_world_comm_,
+        ::boost::mpi::comm_create_kind::comm_attach).split(0,0);
 }
 
 

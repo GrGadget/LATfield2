@@ -19,7 +19,7 @@ conf_data = configuration_data({
     'EXTERNAL_IO' :get_option('EXTERNAL_IO')
     })
 
-deps = [mpi]
+deps = [mpi,boost]
 fftw3 = dependency('fftw3', required: get_option('FFT3D'))
 if (fftw3.found() and get_option('FFT3D'))
     deps += fftw3
