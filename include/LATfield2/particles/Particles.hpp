@@ -273,6 +273,12 @@ public:
     
     // updates the domain decomposition due particle's drift. It moves particles
     // across processes
+    
+    // TODO: The function moveParticles() should be the new instrument to
+    // properly adjust the domain decomposition of the particles. The current
+    // implemention is broken. For the moment the old_moveParticles() function
+    // does the job in the old fashion.
+    void old_moveParticles();
     void moveParticles();
 
 #ifdef HDF5
@@ -962,8 +968,13 @@ Real Particles<part,part_info,part_dataType>::updateVel(Real (*updateVel_funct)(
 
 }
 template <typename part, typename part_info, typename part_dataType>
+    // TODO: fixme
 void Particles<part,part_info,part_dataType>::moveParticles()
 {
+    // TODO: possible source of the bug is that the raw MPI communicator and the
+    // higher level Boost::MPI communicator are not equal.
+    assert(parallel.rank()==parallel.my_comm.rank());
+    
     // send to correct process based on position
     std::vector< std::vector<part> > P_sendrecv(parallel.size());
     Site xPart(lat_part_);
@@ -1005,6 +1016,809 @@ void Particles<part,part_info,part_dataType>::moveParticles()
         }
         v.clear();
     }
+}
+
+template <typename part, typename part_info, typename part_dataType>
+void Particles<part,part_info,part_dataType>::old_moveParticles()
+{
+
+  #ifdef DEBUG_MOVE
+      cout<<parallel.rank()<<"; move start"<<endl;
+  #endif
+
+      parallel.barrier();
+
+      LATfield2::Site x(lat_part_);
+      LATfield2::Site xNew(lat_part_);
+      LATfield2::Site * sites = NULL;
+
+      typename std::list<part>::iterator it,itTemp;
+      //Real b[3];
+      double frac[3];
+      Real x0;
+      int localCoord[3];
+      int newLocalCoord[3];
+
+
+
+      part **sendBuffer;
+      part **recBuffer;
+
+
+      sendBuffer = new part*[6];
+      recBuffer = new part*[6];
+
+      part * pTemp;
+
+      long p;
+      long bufferSize[6];
+      long bufferSizeRec[6];
+
+      std::list<part>  part_moveProc[8];
+
+
+      part partTest;
+
+      for(x.first();x.test();x.next())
+      {
+          if(field_part_(x).size!=0)
+          {
+              for(int i=0;i<3;i++)localCoord[i] = x.coordLocal(i);
+
+              for(it=field_part_(x).parts.begin(); it != field_part_(x).parts.end();)
+              {
+                  itTemp = it;
+                  ++it;
+
+                  partTest = (*itTemp);
+
+                  for (int l=0; l<3; l++)
+                      frac[l] = modf( (*itTemp).pos[l] / lat_resolution_, &x0);
+
+
+
+
+
+                  int partRanks[2];
+                  int thisRanks[2];
+                  getPartNewProcess((*itTemp),partRanks);
+                  thisRanks[0] = parallel.grid_rank()[0];
+                  thisRanks[1] = parallel.grid_rank()[1];
+
+                  for(int i=0;i<3;i++)
+                  {
+                      if((*itTemp).pos[i]<0)itTemp->pos[i] +=  boxSize_[i];
+                      if((*itTemp).pos[i]>=boxSize_[i])itTemp->pos[i]-=boxSize_[i];
+                  }
+
+
+                  if(partRanks[0]==thisRanks[0] && partRanks[1]==thisRanks[1])
+                  {
+                      int r[3];
+                      getPartCoord(*itTemp, r);
+                      if(!xNew.setCoord(r))
+                      {
+                          cout<<"arg"<< *itTemp <<" ; "<< partRanks[0]<< " , " << thisRanks[0] <<endl;
+                      }
+
+                      getPartCoordLocal(*itTemp, newLocalCoord);
+                      if(localCoord[0]!=newLocalCoord[0] || localCoord[1]!=newLocalCoord[1] || localCoord[2]!=newLocalCoord[2] )
+                      {
+                          xNew.setCoordLocal(newLocalCoord);
+                          field_part_(xNew).partsTemp.splice(field_part_(xNew).partsTemp.end(),field_part_(x).parts,itTemp);
+                          field_part_(xNew).size += 1;
+                          field_part_(x).size -= 1;
+                      }
+
+                  }
+                  else if(partRanks[1]==thisRanks[1]-1)
+                  {
+                      if(partRanks[0]==thisRanks[0])
+                      {
+                          part_moveProc[2].splice(part_moveProc[2].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else if(partRanks[0]==thisRanks[0]-1)
+                      {
+                          part_moveProc[0].splice(part_moveProc[0].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else if(partRanks[0]==thisRanks[0]+1)
+                      {
+                          part_moveProc[1].splice(part_moveProc[1].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else
+                      {
+                          cout<< "particle : "<<(*itTemp).ID<<" have move to far away (more than 1 proc)."<<endl;
+                          cout<< "particle position: "<< (*itTemp) <<endl;
+                          cout<< "particle position old: "<< partTest <<endl;
+                          cout<<"particle : "<<(*itTemp).ID<< " "<< thisRanks[0]<<" , "<< thisRanks[1]<<" , "<< partRanks[0]<<" , "<< partRanks[1]<<endl;
+                      }
+                  }
+                  else if(partRanks[1]==thisRanks[1]+1)
+                  {
+                      if(partRanks[0]==thisRanks[0])
+                      {
+                          part_moveProc[5].splice(part_moveProc[5].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else if(partRanks[0]==thisRanks[0]-1)
+                      {
+                          part_moveProc[3].splice(part_moveProc[3].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else if(partRanks[0]==thisRanks[0]+1)
+                      {
+                          part_moveProc[4].splice(part_moveProc[4].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else
+                      {
+                          cout<< "particle : "<<(*itTemp).ID<<" have move to far away (more than 1 proc)."<<endl;
+                          cout<< "particle position: "<< (*itTemp) <<endl;
+                          cout<< "particle position old: "<< partTest <<endl;
+                          cout<<"particle : "<<(*itTemp).ID<< " "<< thisRanks[0]<<" , "<< thisRanks[1]<<" , "<< partRanks[0]<<" , "<< partRanks[1]<<endl;
+                      }
+                  }
+                  else if(partRanks[1]==thisRanks[1])
+                  {
+                      if(partRanks[0]==thisRanks[0]-1)
+                      {
+                          part_moveProc[6].splice(part_moveProc[6].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else if(partRanks[0]==thisRanks[0]+1)
+                      {
+                          part_moveProc[7].splice(part_moveProc[7].end(),field_part_(x).parts,itTemp);
+                          field_part_(x).size -= 1;
+                      }
+                      else
+                      {
+                          cout<< "particle : "<<(*itTemp).ID<<" has moved too much (more than 1 proc)."<<endl;
+                          cout<< "particle position: "<< (*itTemp) <<endl;
+                          cout<< "particle position old: "<< partTest <<endl;
+                          cout<<"particle : "<<(*itTemp).ID<< " "<< thisRanks[0]<<" , "<< thisRanks[1]<<" , "<< partRanks[0]<<" , "<< partRanks[1]<<endl;
+                      }
+                  }
+                  else
+                  {
+                      cout<< "particle : "<<(*itTemp).ID<<" has moved too much (more than 1 proc)."<<endl;
+                      cout<< "particle position: "<< (*itTemp) <<endl;
+                      cout<< "particle position old: "<< partTest <<endl;
+                      cout<<"particle : "<<(*itTemp).ID<< " "<< thisRanks[0]<<" , "<< thisRanks[1]<<" , "<< partRanks[0]<<" , "<< partRanks[1]<<endl;
+                  }
+
+              }
+          }
+
+
+      }
+
+
+
+
+      for(x.first();x.test();x.next())if((field_part_)(x).size!=0)(field_part_)(x).parts.splice((field_part_)(x).parts.end(), (field_part_)(x).partsTemp );
+
+
+       //cout<<"starting first dim"<<endl;
+
+
+      //remove the number of part...
+      for(int i=0;i<8;i++)
+      {
+          numParticles_ -=  part_moveProc[i].size();
+      }
+
+
+
+      ////////////////////////////////////////////////////////////////
+      //First send Y direction
+
+
+      //cout<<"okokok  move firs statrt pack"<<endl;
+      //pack data
+      for(int i=0;i<6;i++)
+      {
+          bufferSize[i]=part_moveProc[i].size();
+          if( bufferSize[i]!=0 )
+          {
+              sendBuffer[i] = new part[bufferSize[i]];
+              for(it=part_moveProc[i].begin(),p=0; it != part_moveProc[i].end();++it,p++)sendBuffer[i][p] = (*it);
+              part_moveProc[i].clear();
+          }
+
+      }
+
+
+       //cout<<"okokok  move firs statrt comm"<<endl;
+
+      if(parallel.grid_rank()[1]%2==0)
+  	{
+  		////////////////////////////////
+  		///send/rec to/from higher rank
+  		////////////////////////////////
+
+          if(parallel.grid_rank()[1]!=parallel.grid_size()[1]-1)/// si pas le dernier alors envoie au +1
+  	    {
+              //send
+              parallel.send_dim1( &bufferSize[3], 3, parallel.grid_rank()[1]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim1( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[1]+1);
+                  }
+              }
+
+              //recieve
+              parallel.receive_dim1( &bufferSizeRec[3], 3, parallel.grid_rank()[1]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[1]+1);
+
+                  }
+              }
+  	    }
+
+          //////////////////////////////
+          ///send/rec to/from lower rank
+          //////////////////////////////
+
+          if(parallel.grid_rank()[1] != 0)     /// si pas le premier alors envoie au -1
+  	    {
+              //send
+              parallel.send_dim1( bufferSize, 3, parallel.grid_rank()[1]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim1( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[1]-1);
+                  }
+              }
+              //recieve
+              parallel.receive_dim1( bufferSizeRec, 3, parallel.grid_rank()[1]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[1]-1);
+
+                  }
+              }
+
+  	    }
+          else if(parallel.grid_size()[1]%2==0)  /// si pair et = 0 alors envoi au dernier
+  	    {
+              //send
+              parallel.send_dim1( bufferSize, 3, parallel.grid_size()[1]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim1( sendBuffer[i], bufferSize[i] , parallel.grid_size()[1]-1);
+                  }
+              }
+              //recieve
+              parallel.receive_dim1( bufferSizeRec, 3, parallel.grid_size()[1]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , parallel.grid_size()[1]-1);
+
+                  }
+              }
+  	    }
+
+
+  	}
+      else
+      {
+          //////////////////////////////
+          ///rec/send from/to lower rank
+          //////////////////////////////
+
+          //tous recois du -1 puis envois au -1
+
+          //recieve
+          parallel.receive_dim1( bufferSizeRec, 3, parallel.grid_rank()[1]-1);
+          for(int i=0;i<3;i++)
+          {
+              if(bufferSizeRec[i]!=0)
+              {
+                  recBuffer[i]=new part[bufferSizeRec[i]];
+                  parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[1]-1);
+              }
+          }
+          //send
+          parallel.send_dim1( bufferSize, 3, parallel.grid_rank()[1]-1);
+          for(int i=0;i<3;i++)
+          {
+              if(bufferSize[i]!=0)
+              {
+                  parallel.send_dim1( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[1]-1);
+              }
+          }
+
+
+          //////////////////////////////
+          //rec/send from/to higher rank
+          /////////////////////////////
+
+          if(parallel.grid_rank()[1]!=parallel.grid_size()[1]-1)//si pas dernier alors recoi du +1
+          {
+
+              //recieve
+              parallel.receive_dim1( &bufferSizeRec[3], 3, parallel.grid_rank()[1]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[1]+1);
+                  }
+              }
+
+              //send
+              parallel.send_dim1( &bufferSize[3], 3, parallel.grid_rank()[1]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim1( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[1]+1);
+                  }
+              }
+
+
+          }
+          else // si dernier alors pair et recoi du premier
+          {
+
+              //recieve
+              parallel.receive_dim1( &bufferSizeRec[3], 3, 0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , 0);
+
+                  }
+              }
+
+              //send
+              parallel.send_dim1( &bufferSize[3], 3,0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim1( sendBuffer[i], bufferSize[i] , 0);
+                  }
+              }
+          }
+      }
+
+  	//if unpair :
+  	/////////////
+
+      if(parallel.grid_size()[1]%2!=0)
+      {
+          if(parallel.grid_rank()[1]==0)
+          {
+              //send
+              parallel.send_dim1( bufferSize, 3, parallel.grid_size()[1]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim1( sendBuffer[i], bufferSize[i] , parallel.grid_size()[1]-1);
+                  }
+              }
+              //recieve
+              parallel.receive_dim1( bufferSizeRec, 3, parallel.grid_size()[1]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , parallel.grid_size()[1]-1);
+                  }
+              }
+          }
+          if(parallel.grid_rank()[1]==parallel.grid_size()[1]-1)
+          {
+
+              //recieve
+              parallel.receive_dim1( &bufferSizeRec[3], 3, 0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim1( recBuffer[i], bufferSizeRec[i] , 0);
+                  }
+              }
+
+              //send
+              parallel.send_dim1( &bufferSize[3], 3,0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim1( sendBuffer[i], bufferSize[i] , 0);
+                  }
+              }
+          }
+      }
+
+
+      //cout<<"okokok  move firs statrt unpack"<<endl;
+
+      //unpack local list: rec[2] and rec[5]
+
+      //add partnum
+      numParticles_ += bufferSizeRec[2] + bufferSizeRec[5];
+      for(int i=0;i<bufferSizeRec[2];i++)
+      {
+          this->getPartCoordLocal(recBuffer[2][i],newLocalCoord);
+          x.setCoordLocal(newLocalCoord);
+
+          field_part_(x).size += 1;
+          field_part_(x).parts.push_back(recBuffer[2][i]);
+  #ifdef DEBUG_MOVE
+          int verif;
+          verif=addParticle_global(recBuffer[2][i]);
+
+          if(verif != 1)
+          {
+              cout<<parallel.rank()<<"; MOVEBUF2 partID "<< recBuffer[2][i].ID<<" is not in the correct proc. " << recBuffer[2][i]<<endl;
+          }
+  #endif
+      }
+
+      //cout<<"buffer size: "<<bufferSizeRec[5]<<endl;
+      //if(bufferSizeRec[5]!=0)
+      for(int i=0;i<bufferSizeRec[5];i++)
+      {
+          //cout<<i<<endl;
+
+          this->getPartCoordLocal(recBuffer[5][i],newLocalCoord);
+
+          x.setCoordLocal(newLocalCoord);
+
+          field_part_(x).size += 1;
+          field_part_(x).parts.push_back(recBuffer[5][i]);
+  #ifdef DEBUG_MOVE
+          int verif;
+          verif=addParticle_global(recBuffer[5][i]);
+
+          if(verif != 1)
+          {
+              cout<<parallel.rank()<<"; MOVEBUF5 partID "<< recBuffer[5][i].ID<<" is not in the correct proc. "<<recBuffer[5][i] <<endl;
+          }
+  #endif
+
+      }
+
+
+  #ifdef DEBUG_MOVE
+      cout<<parallel.rank()<<"; move : end of buffer 2 and 5 copy"<<endl;
+  #endif
+
+      //cout<<"unpack done  "<<endl;
+
+      pTemp = sendBuffer[0];
+      sendBuffer[0]=recBuffer[0];
+      recBuffer[0]=pTemp;
+      if(bufferSize[0]!=0)delete[] recBuffer[0];
+      bufferSize[0]=bufferSizeRec[0];
+
+      pTemp = sendBuffer[1];
+      sendBuffer[1]=recBuffer[3];
+      recBuffer[3]=pTemp;
+      if(bufferSize[1]!=0)delete[] recBuffer[3];
+      bufferSize[1]=bufferSizeRec[3];
+
+      pTemp = sendBuffer[3];
+      sendBuffer[3]=recBuffer[1];
+      recBuffer[1]=pTemp;
+      if(bufferSize[3]!=0)delete[] recBuffer[1];
+      bufferSize[3]=bufferSizeRec[1];
+
+      pTemp = sendBuffer[4];
+      sendBuffer[4]=recBuffer[4];
+      recBuffer[4]=pTemp;
+      if(bufferSize[4]!=0)delete[] recBuffer[4];
+      bufferSize[4]=bufferSizeRec[4];
+
+      if(bufferSize[2]!=0)delete[] sendBuffer[2];
+      if(bufferSizeRec[2]!=0)delete[] recBuffer[2];
+      if(bufferSize[5]!=0)delete[] sendBuffer[5];
+      if(bufferSizeRec[5]!=0)delete[] recBuffer[5];
+
+
+
+      //pack list 6 & 7 into buffer 2 & 5
+
+      bufferSize[2]=part_moveProc[6].size();
+      if( bufferSize[2]!=0 )
+      {
+          sendBuffer[2] = new part[bufferSize[2]];
+          for(it=part_moveProc[6].begin(),p=0; it != part_moveProc[6].end();++it,p++)sendBuffer[2][p]=(*it);
+          part_moveProc[6].clear();
+      }
+
+
+      bufferSize[5]=part_moveProc[7].size();
+      if( bufferSize[5]!=0 )
+      {
+          sendBuffer[5] = new part[bufferSize[5]];
+          for(it=part_moveProc[7].begin(),p=0; it != part_moveProc[7].end();++it,p++)sendBuffer[5][p]=(*it);
+          part_moveProc[7].clear();
+      }
+     //send z
+
+      if(parallel.grid_rank()[0]%2==0)
+  	{
+  		////////////////////////////////
+  		///send/rec to/from higher rank
+  		////////////////////////////////
+
+  		if(parallel.grid_rank()[0]!=parallel.grid_size()[0]-1)/// si pas le dernier alors envoie au +1
+  		{
+              //send
+              parallel.send_dim0( &bufferSize[3], 3, parallel.grid_rank()[0]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim0( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[0]+1);
+                  }
+
+              }
+
+              //recieve
+              parallel.receive_dim0( &bufferSizeRec[3], 3, parallel.grid_rank()[0]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[0]+1);
+
+                  }
+              }
+  		}
+
+  		//////////////////////////////
+  		///send/rec to/from lower rank
+  		//////////////////////////////
+
+  		if(parallel.grid_rank()[0] != 0)     /// si pas le premier alors envoie au -1
+  		{
+              //send
+              parallel.send_dim0( bufferSize, 3, parallel.grid_rank()[0]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim0( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[0]-1);
+                  }
+              }
+              //recieve
+              parallel.receive_dim0( bufferSizeRec, 3, parallel.grid_rank()[0]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                     recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[0]-1);
+
+                  }
+              }
+
+  		}
+  		else if(parallel.grid_size()[0]%2==0)  /// si pair et = 0 alors envoi au dernier
+  		{
+              //send
+              parallel.send_dim0( bufferSize, 3, parallel.grid_size()[0]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim0( sendBuffer[i], bufferSize[i] , parallel.grid_size()[0]-1);
+                  }
+              }
+              //recieve
+              parallel.receive_dim0( bufferSizeRec, 3, parallel.grid_size()[0]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , parallel.grid_size()[0]-1);
+
+                  }
+              }
+  		}
+
+  	}
+  	else
+  	{
+  		//////////////////////////////
+  		///rec/send from/to lower rank
+  		//////////////////////////////
+
+  		//tous recois du -1 puis envois au -1
+
+          //recieve
+          parallel.receive_dim0( bufferSizeRec, 3, parallel.grid_rank()[0]-1);
+          for(int i=0;i<3;i++)
+          {
+              if(bufferSizeRec[i]!=0)
+              {
+                  recBuffer[i]=new part[bufferSizeRec[i]];
+                  parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[0]-1);
+
+              }
+          }
+          //send
+  		parallel.send_dim0( bufferSize, 3, parallel.grid_rank()[0]-1);
+          for(int i=0;i<3;i++)
+          {
+              if(bufferSize[i]!=0)
+              {
+                  parallel.send_dim0( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[0]-1);
+              }
+  		}
+
+
+  		//////////////////////////////
+  		//rec/send from/to higher rank
+  		/////////////////////////////
+
+          if(parallel.grid_rank()[0]!=parallel.grid_size()[0]-1)//si pas dernier alors recoi du +1
+  		{
+
+              //recieve
+              parallel.receive_dim0( &bufferSizeRec[3], 3, parallel.grid_rank()[0]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , parallel.grid_rank()[0]+1);
+
+                  }
+              }
+
+              //send
+              parallel.send_dim0( &bufferSize[3], 3, parallel.grid_rank()[0]+1);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim0( sendBuffer[i], bufferSize[i] , parallel.grid_rank()[0]+1);
+                  }
+              }
+
+  		}
+  		else // si dernier alors pair et recoi du premier
+  		{
+
+              //recieve
+              parallel.receive_dim0( &bufferSizeRec[3], 3, 0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , 0);
+                  }
+              }
+
+              //send
+              parallel.send_dim0( &bufferSize[3], 3,0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim0( sendBuffer[i], bufferSize[i] , 0);
+                  }
+  			}
+  		}
+
+  	}
+
+  	//if unpair :
+  	/////////////
+
+  	if(parallel.grid_size()[0]%2!=0)
+  	{
+  		if(parallel.grid_rank()[0]==0)
+  		{
+              //send
+              parallel.send_dim0( bufferSize, 3, parallel.grid_size()[0]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim0( sendBuffer[i], bufferSize[i] , parallel.grid_size()[0]-1);
+                  }
+              }
+              //recieve
+              parallel.receive_dim0( bufferSizeRec, 3, parallel.grid_size()[0]-1);
+              for(int i=0;i<3;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , parallel.grid_size()[0]-1);
+
+                  }
+              }
+  		}
+  		if(parallel.grid_rank()[0]==parallel.grid_size()[0]-1)
+  		{
+
+              //recieve
+              parallel.receive_dim0( &bufferSizeRec[3], 3, 0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSizeRec[i]!=0)
+                  {
+                      recBuffer[i]=new part[bufferSizeRec[i]];
+                      parallel.receive_dim0( recBuffer[i], bufferSizeRec[i] , 0);
+
+                  }
+              }
+
+              //send
+              parallel.send_dim0( &bufferSize[3], 3,0);
+              for(int i=3;i<6;i++)
+              {
+                  if(bufferSize[i]!=0)
+                  {
+                      parallel.send_dim0( sendBuffer[i], bufferSize[i] , 0);
+                  }
+              }
+  		}
+  	}
+
+      //unpack data
+  	for(int i=0;i<6;i++)
+      {
+  	    numParticles_ += bufferSizeRec[i] ;
+      }
+
+      for(int p=0;p<6;p++)
+      {
+          for(int i=0;i<bufferSizeRec[p];i++)
+          {
+              this->getPartCoordLocal(recBuffer[p][i],newLocalCoord);
+
+              x.setCoordLocal(newLocalCoord);
+
+              field_part_(x).size += 1;
+              field_part_(x).parts.push_back(recBuffer[p][i]);
+          }
+      }
+
+
+      for(int i=0;i<6;i++)
+      {
+          if(bufferSize[i]!=0)delete[] sendBuffer[i];
+          if(bufferSizeRec[i]!=0)delete[] recBuffer[i];
+      }
+      delete[] sendBuffer;
+      delete[] recBuffer;
+
 }
 
 template <typename part, typename part_info, typename part_dataType>
