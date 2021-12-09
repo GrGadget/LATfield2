@@ -6,7 +6,7 @@
  \author David Daverio, edited by Wessel Valkenburg
  */
 
-
+#include <boost/mpi/communicator.hpp>
 #include "LATfield2/macros.hpp"
 #include <cstdlib>
 
@@ -485,7 +485,10 @@ private:
 
   MPI_Comm world_comm_,lat_world_comm_, *dim0_comm_, *dim1_comm_;
   MPI_Group world_group_,lat_world_group_, *dim0_group_,*dim1_group_ ;
-
+  
+  public:
+  ::boost::mpi::communicator my_comm;
+  private:
 
 #ifdef EXTERNAL_IO
   MPI_Comm IO_comm_;

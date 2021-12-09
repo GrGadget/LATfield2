@@ -157,6 +157,9 @@ void scalarProjectionCIC_project(
                 {
                     rescalPos[i]=(*it).pos[i]-referPos[i];
                     rescalPosDown[i]=latresolution -rescalPos[i];
+                    
+                    assert(rescalPos[i]>=0);
+                    assert(rescalPosDown[i]>=0);
                 }
                 
                 
