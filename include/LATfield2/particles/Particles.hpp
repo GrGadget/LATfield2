@@ -274,11 +274,11 @@ public:
     // updates the domain decomposition due particle's drift. It moves particles
     // across processes
     
-    // TODO: The function moveParticles() should be the new instrument to
+    // TODO: The function new_moveParticles() should be the new instrument to
     // properly adjust the domain decomposition of the particles. The current
-    // implemention is broken. For the moment the old_moveParticles() function
+    // implemention is broken. For the moment the moveParticles() function
     // does the job in the old fashion.
-    void old_moveParticles();
+    void new_moveParticles();
     void moveParticles();
 
 #ifdef HDF5
@@ -969,7 +969,7 @@ Real Particles<part,part_info,part_dataType>::updateVel(Real (*updateVel_funct)(
 }
 template <typename part, typename part_info, typename part_dataType>
     // TODO: fixme
-void Particles<part,part_info,part_dataType>::moveParticles()
+void Particles<part,part_info,part_dataType>::new_moveParticles()
 {
     // TODO: possible source of the bug is that the raw MPI communicator and the
     // higher level Boost::MPI communicator are not equal.
@@ -1018,8 +1018,11 @@ void Particles<part,part_info,part_dataType>::moveParticles()
     }
 }
 
+
+/* This is the old version of moveParticles, we keep this as default until we
+ * fix the bug with the new_moveParticles */
 template <typename part, typename part_info, typename part_dataType>
-void Particles<part,part_info,part_dataType>::old_moveParticles()
+void Particles<part,part_info,part_dataType>::moveParticles()
 {
 
   #ifdef DEBUG_MOVE
