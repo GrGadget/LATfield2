@@ -84,6 +84,9 @@ template<class FieldType>
 class Field
 	{
 	public:
+    
+    // std:: style to programmatically access the template type
+    using value_type = FieldType; 
 
     template<class Functor>
     void for_each(Functor F)
@@ -91,7 +94,7 @@ class Field
       Site  x(lattice_);
       for(x.first() ; x.test(); x.next())
       {
-        F(x);
+        F((*this)(x),x);
       }
     }
     template<class Functor>
@@ -100,7 +103,7 @@ class Field
       Site  x(lattice_);
       for(x.first() ; x.test(); x.next())
       {
-        F(x);
+        F((*this)(x),x);
       }
     }
 
