@@ -12,12 +12,12 @@ pkg=import('pkgconfig')
 
 
 
-conf_data = configuration_data({ 
-    'FFT3D' :get_option('FFT3D'),
-    'HDF5' :get_option('HDF5'),
-    'SINGLE' :get_option('SINGLE'),
-    'EXTERNAL_IO' :get_option('EXTERNAL_IO')
-    })
+# conf_data = configuration_data({ 
+#     'FFT3D' :get_option('FFT3D'),
+#     'HDF5' :get_option('HDF5'),
+#     'SINGLE' :get_option('SINGLE'),
+#     'EXTERNAL_IO' :get_option('EXTERNAL_IO')
+#     })
 
 deps = [mpi,boost]
 fftw3 = dependency('fftw3', required: get_option('FFT3D'))
@@ -34,18 +34,13 @@ subdir('src')
 
 liblatfield = library('latfield',
     latfield_headers,
-    part_headers,
     latfield_hdr,
-    sources,
-    config,
     include_directories: include,
     install: true,
     dependencies: deps)
 
 install_headers(latfield_hdr)
 install_headers(latfield_headers, subdir: 'LATfield2')
-install_headers(config, subdir: 'LATfield2')
-install_headers(part_headers,subdir: 'LATfield2/particles')
 
 pkg.generate(liblatfield,
     description: 'LATfield2')
