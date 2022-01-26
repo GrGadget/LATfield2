@@ -91,7 +91,7 @@ class Field
     template<class Functor>
     void for_each(Functor F)
     {
-      Site  x(lattice_);
+      Site  x(*lattice_);
       for(x.first() ; x.test(); x.next())
       {
         F((*this)(x),x);
@@ -100,7 +100,7 @@ class Field
     template<class Functor>
     void for_each(Functor F) const
     {
-      Site  x(lattice_);
+      Site  x(*lattice_);
       for(x.first() ; x.test(); x.next())
       {
         F((*this)(x),x);
