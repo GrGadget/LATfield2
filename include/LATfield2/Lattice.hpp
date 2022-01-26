@@ -129,11 +129,11 @@ public:
             mesh_communicator(comm,comm_top),
             mesh_halo{halo},
             
-            mesh_size(mesh_communicator.ndims()),
+            mesh_size(mesh_communicator.ndims()+1),
             mesh_commSize(mesh_communicator.ndims()),
             
-            my_size(mesh_communicator.ndims()),
-            my_offset(mesh_communicator.ndims())
+            my_size(mesh_communicator.ndims()+1),
+            my_offset(mesh_communicator.ndims()+1)
     {
         
         const cartesian_topology domain_topology = mesh_communicator.topology();
@@ -160,6 +160,11 @@ public:
                     domain_topvector[i].size,
                     coordinates[i]);
         }
+        {
+            mesh_size[ndim] = mesh_topvector[ndim].size;
+            my_size[ndim]   = mesh_size[ndim];
+            my_offset[ndim] = 0;
+        }
     }
     
     // int mesh_offset(int dom_coordinate, int dim) const
@@ -185,7 +190,7 @@ public:
     /*!
      \return int. Number of dimensions of the lattice.
      */
-    int  dim()const {return mesh_communicator.ndims();}
+    int  dim()const {return mesh_size.size();}
     /*!
      \return int. Size of the halo (ghost cells).
      */
@@ -201,7 +206,7 @@ public:
      \param direction : asked dimension.
      \return int. Global size of the lattice in the given dimension.
      */
-    int  size(int i) const { return mesh_size[i]; }
+    int  size(int i) const { return mesh_size.at(i); }
     
     /*!
      \return int*. Pointer to the array of the size of each dimension of the sublattice stored in this MPI process.
@@ -213,8 +218,12 @@ public:
      \param direction : asked dimension.
      \return int. Global size of the sublattice (of this MPI process) in the given dimension.
      */
-    int sizeLocal(int i)const { return my_size[i]; }
+    int sizeLocal(int i)const { return my_size.at(i); }
     
+    int coordinates(int i) const 
+    {
+        return mesh_communicator.coordinates(mesh_communicator.rank()).at(i);
+    }
     
     // /*!
     //  \return long. Number of sites on the lattice (excluding halo sites).
