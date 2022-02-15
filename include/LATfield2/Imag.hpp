@@ -127,6 +127,10 @@ inline LATfield2::Real abs(LATfield2::Imag c)
 {
     return sqrt( c.norm() );
 }
+inline LATfield2::Real norm(LATfield2::Imag c)
+{
+    return c.norm();
+}
 
 
 Imag expi(Real x);
