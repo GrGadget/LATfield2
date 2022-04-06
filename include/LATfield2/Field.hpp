@@ -94,7 +94,7 @@ class Field
       Site  x(*lattice_);
       for(x.first() ; x.test(); x.next())
       {
-        F((*this)(x),x);
+        F(x);
       }
     }
     template<class Functor>
@@ -103,7 +103,7 @@ class Field
       Site  x(*lattice_);
       for(x.first() ; x.test(); x.next())
       {
-        F((*this)(x),x);
+        F(x);
       }
     }
 
