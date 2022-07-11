@@ -2,7 +2,6 @@ project('LATfield2','cpp','c',
         default_options : ['cpp_std=c++17',
         'warning_level=3'],
         version: '1.1')
-add_global_arguments(['-Ofast','-march=native' ],language : 'cpp')
 
 cpp=meson.get_compiler('cpp')
 mpi=dependency('mpi',language: 'cpp')
