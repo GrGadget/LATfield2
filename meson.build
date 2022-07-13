@@ -1,6 +1,7 @@
 project('LATfield2','cpp','c',
         default_options : ['cpp_std=c++17',
-        'warning_level=3'],
+        'warning_level=3',
+        'optimization=3'],
         version: '1.1')
 
 cpp=meson.get_compiler('cpp')
@@ -53,3 +54,5 @@ subdir('benchmarks_tests')
 subdir('examples')
 
 subdir('tests')
+
+liblatfield_dep = declare_dependency(include_directories: include, link_with: liblatfield)
