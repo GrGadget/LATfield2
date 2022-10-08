@@ -973,7 +973,7 @@ void Particles<part,part_info,part_dataType>::new_moveParticles()
 {
     // TODO: possible source of the bug is that the raw MPI communicator and the
     // higher level Boost::MPI communicator are not equal.
-    assert(parallel.rank()==parallel.my_comm.rank());
+    assert(parallel.rank()==parallel.my_communicator.rank());
     
     // send to correct process based on position
     std::vector< std::vector<part> > P_sendrecv(parallel.size());
@@ -1005,7 +1005,7 @@ void Particles<part,part_info,part_dataType>::new_moveParticles()
             }
         }
     }
-    ::boost::mpi::all_to_all(parallel.my_comm,P_sendrecv,P_sendrecv);
+    ::boost::mpi::all_to_all(parallel.my_communicator,P_sendrecv,P_sendrecv);
 
     for(auto i=0U;i<P_sendrecv.size();++i)
     {
