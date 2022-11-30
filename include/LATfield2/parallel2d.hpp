@@ -6,7 +6,7 @@
  \author David Daverio, edited by Wessel Valkenburg
  */
 
-#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/cartesian_communicator.hpp>
 #include "LATfield2/macros.hpp"
 #include <cstdlib>
 
@@ -486,8 +486,56 @@ private:
   MPI_Comm world_comm_,lat_world_comm_, *dim0_comm_, *dim1_comm_;
   MPI_Group world_group_,lat_world_group_, *dim0_group_,*dim1_group_ ;
   
+  
+  // default constructor for cartesian_topology is deleted 
+  // we have to initialize this to a funny state because parallel is global and constructed
+  // before we have the information of the simulation.
+  ::boost::mpi::cartesian_topology my_topology{{1,false}}; 
+  
+  ::boost::mpi::communicator my_communicator;
+  
+  // default constructor for cartesian_communicator is deleted
+  // same problem here, but a further problem which is that the cartesian_communicator 
+  // cannot be created in a funny state before the MPI environment has been set.
+  std::unique_ptr< ::boost::mpi::cartesian_communicator > my_cartesian_communicator;
+        
+  std::array<::boost::mpi::communicator,2> my_axis_communicator;
+  
   public:
-  ::boost::mpi::communicator my_comm;
+  
+  const auto& cartesian_communicator()const
+  {
+    return *my_cartesian_communicator;
+  }
+  auto coordinates()const
+  {
+    auto coord = my_cartesian_communicator->coordinates(my_cartesian_communicator->rank());
+    // TODO: we will remove this swap when we eliminate the world_comm_, lat_world_comm_,
+    // dim0_comm_, dim1_comm_, etc bullshit
+    std::swap(coord[0],coord[1]);
+    return coord;
+  }
+  auto grid_topology()const
+  {
+    std::array<int,2> dims={my_topology[0].size,my_topology[1].size};
+    // TODO: we will remove this swap when we eliminate the world_comm_, lat_world_comm_,
+    // dim0_comm_, dim1_comm_, etc bullshit
+    std::swap(dims[0],dims[1]);
+    return dims;
+  }
+  const auto& axis_communicator(int d)const
+  {
+    return my_axis_communicator.at(d);
+  }
+  
+  auto rank(std::vector< int > coords)const
+  {
+    // TODO: we will remove this swap when we eliminate the world_comm_, lat_world_comm_,
+    // dim0_comm_, dim1_comm_, etc bullshit
+    std::reverse(coords.begin(),coords.end());
+    return my_cartesian_communicator->rank(coords);
+  }
+  
   private:
 
 #ifdef EXTERNAL_IO

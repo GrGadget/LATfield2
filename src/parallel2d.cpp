@@ -28,30 +28,88 @@ void Parallel2d::initialize(MPI_Comm com,int proc_size0, int proc_size1)
 
 
 void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int, int)
+// initializes the state of the Parallel2d variable once we know the MPI communicator
+// and the processor grid.
+
+// Example:
+// proc_size0 = 4
+// proc_size1 = 3
+//
+//   Process grid will look like this:
+//
+//     8 9 10 11
+//     4 5 6  7
+//     0 1 2  3
+//
+// and they will be split into several MPI groups
+// 
+// dim0_group_[0] = {0,1,2,3}
+// dim0_group_[1] = {4,5,6,7}
+// dim0_group_[2] = {8,9,10,11}
+//
+// dim1_group_[0] = {0,4,8}
+// dim1_group_[1] = {1,5,9}
+// dim1_group_[2] = {2,6,10}
+// dim1_group_[3] = {3,7,11}
+
 {
+    world_comm_ = com;
+    MPI_Comm_rank( world_comm_, &world_rank_ );
+    MPI_Comm_size( world_comm_, &world_size_ );
+    
+    /*
+        For Boost::MPI the fastest running index is the last,
+        while for LATfield is the first.
+        To introduce a LATfield2-compatible process topology
+        I had to invert the order of proc_sizeX.
+    */
+    my_topology = ::boost::mpi::cartesian_topology{
+        {proc_size1,/* periodicity = */ true},
+        {proc_size0,/* periodicity = */ true}};
+    
+    my_communicator = ::boost::mpi::communicator(
+                        world_comm_,
+                        ::boost::mpi::comm_duplicate);
+    
+    // the root process has special powers,
+    // eg. root writes the snapshot headers and error messages
+    root_=0;
+    isRoot_ = (root_ == my_communicator.rank());
+                        
+    my_cartesian_communicator.reset(new ::boost::mpi::cartesian_communicator(
+                    my_communicator,
+                    my_topology
+                    ) );
+    
+    const auto coord = my_cartesian_communicator->coordinates(my_communicator.rank());
+    
+    // communicator for processes that share the same coord[0]
+    my_axis_communicator[0] = my_communicator.split(coord[0],my_communicator.rank());
+    
+    // communicator for processes that share the same coord[1]
+    my_axis_communicator[1] = my_communicator.split(coord[1],my_communicator.rank());
+                    
+                    
     #ifndef EXTERNAL_IO
     lat_world_comm_ = com;
-    world_comm_ = com;
     MPI_Comm_rank( lat_world_comm_, &lat_world_rank_ );
     MPI_Comm_size( lat_world_comm_, &lat_world_size_ );
-    MPI_Comm_rank( world_comm_, &world_rank_ );
-    MPI_Comm_size( world_comm_, &world_size_ );
-    #else
-    world_comm_ = com;
-    MPI_Comm_rank( world_comm_, &world_rank_ );
-    MPI_Comm_size( world_comm_, &world_size_ );
     #endif
 
     grid_size_[0]=proc_size0;
 	grid_size_[1]=proc_size1;
-
+    
 	dim0_comm_ = (MPI_Comm *)malloc(grid_size_[1]*sizeof(MPI_Comm));
 	dim1_comm_ = (MPI_Comm *)malloc(grid_size_[0]*sizeof(MPI_Comm));
 
 	dim0_group_ = (MPI_Group *)malloc(grid_size_[1]*sizeof(MPI_Group));
 	dim1_group_ = (MPI_Group *)malloc(grid_size_[0]*sizeof(MPI_Group));
 
-	int rang[3],i,j,comm_rank;
+    // to create MPI_Group
+    // one range is a triplet: (first rank, last rank, stride)
+    int range[3];
+    
+    int comm_rank;
 
 
 
@@ -73,18 +131,18 @@ void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int, in
 
     MPI_Comm_group(world_comm_,&world_group_);
 
-    rang[0]=0;
-    rang[1]=proc_size0*proc_size1-1;
-    rang[2]=1;
+    range[0]=0;
+    range[1]=proc_size0*proc_size1-1;
+    range[2]=1;
 
-    MPI_Group_range_incl(world_group_,1,&rang,&lat_world_group_);
+    MPI_Group_range_incl(world_group_,1,&range,&lat_world_group_);
     MPI_Comm_create(world_comm_,lat_world_group_ , &lat_world_comm_);
 
-    rang[0]=proc_size0*proc_size1;
-    rang[1]=proc_size0*proc_size1 + IO_total_size - 1;
-    rang[2]=1;
+    range[0]=proc_size0*proc_size1;
+    range[1]=proc_size0*proc_size1 + IO_total_size - 1;
+    range[2]=1;
 
-    MPI_Group_range_incl(world_group_,1,&rang,&IO_group_);
+    MPI_Group_range_incl(world_group_,1,&range,&IO_group_);
     MPI_Comm_create(world_comm_,IO_group_ , &IO_comm_);
 
 
@@ -94,46 +152,44 @@ void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int, in
         lat_world_rank_=comm_rank;
         MPI_Comm_size( lat_world_comm_, &lat_world_size_ );
 
-        rang[2]=1;
-        for(j=0;j<grid_size_[1];j++)
+        range[2]=1;
+        for(int j=0;j<grid_size_[1];j++)
         {
-            rang[0] = j * grid_size_[0];
-            rang[1] = grid_size_[0] - 1 + j*grid_size_[0];
-            MPI_Group_range_incl(lat_world_group_,1,&rang,&dim0_group_[j]);
+            range[0] = j * grid_size_[0];
+            range[1] = grid_size_[0] - 1 + j*grid_size_[0];
+            MPI_Group_range_incl(lat_world_group_,1,&range,&dim0_group_[j]);
             MPI_Comm_create(lat_world_comm_, dim0_group_[j], &dim0_comm_[j]);
         }
 
 
-        rang[2]=grid_size_[0];
-        for(i=0;i<grid_size_[0];i++)
+        range[2]=grid_size_[0];
+        for(int i=0;i<grid_size_[0];i++)
         {
-            rang[0]=i;
-            rang[1]=i+(grid_size_[1]-1)*grid_size_[0];
-            MPI_Group_range_incl(lat_world_group_,1,&rang,&dim1_group_[i]);
+            range[0]=i;
+            range[1]=i+(grid_size_[1]-1)*grid_size_[0];
+            MPI_Group_range_incl(lat_world_group_,1,&range,&dim1_group_[i]);
             MPI_Comm_create(lat_world_comm_, dim1_group_[i], &dim1_comm_[i]);
         }
 
 
-        for(i=0;i<grid_size_[0];i++)
+        for(int i=0;i<grid_size_[0];i++)
         {
             MPI_Group_rank(dim1_group_[i], &comm_rank);
             if(comm_rank!=MPI_UNDEFINED)grid_rank_[1]=comm_rank;
         }
 
-        for(j=0;j<grid_size_[1];j++)
+        for(int j=0;j<grid_size_[1];j++)
         {
             MPI_Group_rank(dim0_group_[j], &comm_rank);
             if(comm_rank!=MPI_UNDEFINED)grid_rank_[0]=comm_rank;
         }
 
 
-        root_=0;
         isIO_=false;
     }
     else
     {
         lat_world_rank_=-1;
-        root_=0;
         grid_rank_[1]=-1;
         grid_rank_[0]=-1;
         isIO_=true;
@@ -161,47 +217,47 @@ void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int, in
 			this->abortForce();
 		}
 	}
-
+    
+    // create the global group
     MPI_Comm_group(lat_world_comm_,&lat_world_group_);
 
 
-
-
-	rang[2]=1;
-	for(j=0;j<grid_size_[1];j++)
+    // create the groups and communicators along the X direction
+	range[2]=1;
+	for(int j=0;j<grid_size_[1];j++)
 	{
-		rang[0] = j * grid_size_[0];
-		rang[1] = grid_size_[0] - 1 + j*grid_size_[0];
-		MPI_Group_range_incl(lat_world_group_,1,&rang,&dim0_group_[j]);
+		range[0] = j * grid_size_[0];
+		range[1] = grid_size_[0] - 1 + j*grid_size_[0];
+		MPI_Group_range_incl(lat_world_group_,1,&range,&dim0_group_[j]);
 		MPI_Comm_create(lat_world_comm_, dim0_group_[j], &dim0_comm_[j]);
 	}
 
 
-	rang[2]=grid_size_[0];
-	for(i=0;i<grid_size_[0];i++)
+    // create the groups and communicators along the Y direction
+	range[2]=grid_size_[0];
+	for(int i=0;i<grid_size_[0];i++)
 	{
-		rang[0]=i;
-		rang[1]=i+(grid_size_[1]-1)*grid_size_[0];
-		MPI_Group_range_incl(lat_world_group_,1,&rang,&dim1_group_[i]);
+		range[0]=i;
+		range[1]=i+(grid_size_[1]-1)*grid_size_[0];
+		MPI_Group_range_incl(lat_world_group_,1,&range,&dim1_group_[i]);
 		MPI_Comm_create(lat_world_comm_, dim1_group_[i], &dim1_comm_[i]);
 	}
 
 
 
-	for(i=0;i<grid_size_[0];i++)
+	for(int i=0;i<grid_size_[0];i++)
 	{
 		MPI_Group_rank(dim1_group_[i], &comm_rank);
 		if(comm_rank!=MPI_UNDEFINED)grid_rank_[1]=comm_rank;
 	}
 
-	for(j=0;j<grid_size_[1];j++)
+	for(int j=0;j<grid_size_[1];j++)
 	{
 		MPI_Group_rank(dim0_group_[j], &comm_rank);
 		if(comm_rank!=MPI_UNDEFINED)grid_rank_[0]=comm_rank;
 	}
 
 
-	root_=0;
 
     if(grid_rank_[0]==grid_size_[0]-1)last_proc_[0]=true;
 	else last_proc_[0]=false;
@@ -212,17 +268,31 @@ void Parallel2d::initialize(MPI_Comm com, int proc_size0, int proc_size1,int, in
 
 #endif
 
-	if(root_ == lat_world_rank_)isRoot_=true;
-    else isRoot_=false;
-
-    // we need to construct a communicator on-the-fly and then split it into
-    // itself in a sort of communicator factory, because LATfield2::parallel is
-    // global with a default constructor and we cannot define my_comm at
-    // construction.
-    my_comm =
-    ::boost::mpi::communicator(
-        lat_world_comm_,
-        ::boost::mpi::comm_create_kind::comm_attach).split(0,0);
+   
+   
+    /*
+        The use of Boost::MPI cartesian_communicator defeats the
+        purpose of grid_rank_[], dim0_comm_[], dim1_comm_[],
+        dim0_group_[], dim1_group_[].
+        I will try to remove those in the future.
+        For the moment they will coexist with boost
+        but we must make sure they're compatible.
+    */
+    
+    assert(my_axis_communicator[0].rank()==grid_rank_[0]);
+    assert(my_axis_communicator[1].rank()==grid_rank_[1]);
+    
+    assert(my_axis_communicator[0].size()==grid_size_[0]);
+    assert(my_axis_communicator[1].size()==grid_size_[1]);
+   
+    {
+        const auto rank = my_cartesian_communicator->rank();
+        assert(rank==world_rank_);
+        
+        const auto coord = my_cartesian_communicator->coordinates(rank);
+        assert(coord[1]==grid_rank_[0]);
+        assert(coord[0]==grid_rank_[1]);
+    }
 }
 
 
